@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 
 from sqlalchemy import String
 from sqlalchemy.orm import Mapped, mapped_column
-from fastapi_users.db import SQLAlchemyBaseUserTable, SQLAlchemyUserDatabase
+from fastapi_users_db_sqlalchemy import SQLAlchemyBaseUserTable, SQLAlchemyUserDatabase
 
 from core.types.user_id import UserIdType
 from .base import BaseModel
@@ -18,5 +18,5 @@ class User(BaseModel, IdIntPkMixin, SQLAlchemyBaseUserTable[UserIdType]):
     father_name: Mapped[str] = mapped_column(String)
 
     @classmethod
-    def get_db(cls, session: AsyncSession) -> SQLAlchemyUserDatabase:
+    def get_db(cls, session: "AsyncSession") -> SQLAlchemyUserDatabase:
         return SQLAlchemyUserDatabase(session, cls)
