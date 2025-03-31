@@ -1,4 +1,3 @@
-from fastapi import APIRouter
 from fastapi_users import FastAPIUsers
 
 from core.models import User
