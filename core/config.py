@@ -26,5 +26,11 @@ class Settings(BaseSettings):
         env_prefix="APP_CONFIG"
     )
 
+    @property
+    def bearer_token_url(self) -> str:
+        parts = (self.api_v1_prefix, self.auth)
+        path = "".join(parts)
+        return path.removeprefix("/")
+
 
 settings = Settings()
