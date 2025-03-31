@@ -7,6 +7,6 @@ from .backend import authentication_backend
 
 
 fastapi_users_router = FastAPIUsers[User, UserIdType](
-    get_user_manager=get_user_manager,
-    auth_backends=authentication_backend,
+    get_user_manager,
+    [authentication_backend],
 )

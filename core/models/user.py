@@ -1,6 +1,6 @@
 from typing import TYPE_CHECKING
 
-from sqlalchemy import String
+from sqlalchemy import String, Boolean
 from sqlalchemy.orm import Mapped, mapped_column
 from fastapi_users_db_sqlalchemy import SQLAlchemyBaseUserTable, SQLAlchemyUserDatabase
 
@@ -16,6 +16,8 @@ class User(BaseModel, IdIntPkMixin, SQLAlchemyBaseUserTable[UserIdType]):
     first_name: Mapped[str] = mapped_column(String)
     last_name: Mapped[str] = mapped_column(String)
     father_name: Mapped[str] = mapped_column(String)
+    is_teacher: Mapped[bool] = mapped_column(Boolean, default=False)
+    is_student: Mapped[bool] = mapped_column(Boolean, default=False)
 
     @classmethod
     def get_db(cls, session: "AsyncSession") -> SQLAlchemyUserDatabase:

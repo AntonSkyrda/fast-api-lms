@@ -8,6 +8,8 @@ class UserBase(BaseModel):
     first_name: str
     last_name: str
     father_name: str
+    is_teacher: bool
+    is_student: bool
 
 
 class UserRead(UserBase, schemas.BaseUser[UserIdType]):
