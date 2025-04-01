@@ -38,7 +38,7 @@ export default function LoginForm() {
           name="username"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username чи Email</FormLabel>
+              <FormLabel htmlFor="username">Username чи Email</FormLabel>
               <FormControl>
                 <Input
                   type="username"
@@ -56,7 +56,7 @@ export default function LoginForm() {
           name="password"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Пароль</FormLabel>
+              <FormLabel htmlFor="password">Пароль</FormLabel>
               <FormControl>
                 <Input
                   type="password"

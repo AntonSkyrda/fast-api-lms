@@ -1,21 +1,13 @@
 import { login as loginApi } from "../../lib/services/apiAuth";
-import useSignIn from "react-auth-kit/hooks/useSignIn";
-import { useMutation } from "@tanstack/react-query";
+// import useSignIn from "react-auth-kit/hooks/useSignIn";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-
-// async function fetchUser(token: string) {
-//   const res = await axios.get(`${import.meta.env.VITE_BASE_URL}/users`, {
-//     headers: {
-//       Authorization: `Bearer ${token}`,
-//     },
-//   });
-//   console.log(res);
-// }
+import { saveToken } from "../../lib/utils/manageCookie";
 
 export function useLogin() {
-  // const queryClient = useQueryClient();
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
-  const signIn = useSignIn();
+  // const signIn = useSignIn();
 
   const {
     mutate: login,
@@ -29,14 +21,28 @@ export function useLogin() {
       username: string;
       password: string;
     }) => loginApi({ username, password }),
-    onSuccess: (auth) => {
-      // queryClient.setQueryData(["user"], auth);
-      signIn({
-        auth: {
-          token: auth.access_token,
-          type: auth.token_type,
-        },
-      });
+    onSuccess: ({ token, user }) => {
+      // const signInConfig = {
+      //   auth: {
+      //     token: token.access_token,
+      //     type: token.token_type,
+      //   },
+      //   userState: {
+      //     name: user.email,
+      //     id: user.id,
+      //   },
+      // };
+      // const isSignedIn = signIn(signInConfig);
+      // if (!isSignedIn) {
+      //   console.error("❌ Помилка збереження токена!");
+      //   throw new Error(
+      //     "Не вдалося зберегти токен. Перевірте `react-auth-kit`.",
+      //   );
+      // }
+      // console.log("✅ Успішно збережено токен!");
+
+      saveToken(token);
+      queryClient.setQueryData(["user"], user);
       navigate("/home", { replace: true });
     },
   });

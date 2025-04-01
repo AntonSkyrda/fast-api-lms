@@ -21,11 +21,9 @@ export async function getCourseById(id: string, authHeader: string) {
     .catch(() => {
       throw new Error("Такого курсу не існує!");
     });
-  const {
-    success,
-    data: course,
-    error,
-  } = await courseDetailSchema.safeParseAsync(res.data);
+  const { success, data: course } = await courseDetailSchema.safeParseAsync(
+    res.data,
+  );
   // console.log(error);
   if (!success) throw new Error(`There is Error with loading Courses data`);
   return course;

@@ -16,11 +16,8 @@ import Lessons from "./pages/Lessons";
 import Tasks from "./pages/Tasks";
 import Users from "./pages/Users";
 import Course from "./pages/Course";
+import { useEffect } from "react";
 
-interface IUserData {
-  name: string;
-  uuid: string;
-}
 function App() {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -31,12 +28,19 @@ function App() {
     },
   });
 
-  const authStore = createStore<IUserData>({
-    authName: "_auth",
+  const authStore = createStore({
+    authName: "_bearerAuth",
     authType: "cookie",
     cookieDomain: window.location.hostname,
     cookieSecure: window.location.protocol === "https:",
   });
+
+  useEffect(
+    function () {
+      console.log(authStore);
+    },
+    [authStore],
+  );
 
   return (
     <QueryClientProvider client={queryClient}>
