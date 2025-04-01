@@ -15,8 +15,15 @@ export const saveToken = (token: token) => {
 };
 
 // Отримання токена
+type returnObjType = { access_token: string; token_type: "bearer" };
 export const getToken = () => {
-  return Cookies.get("_auth");
+  const token = Cookies.get("_auth");
+  if (!token) return;
+  const returnObj: returnObjType = {
+    access_token: token,
+    token_type: "bearer",
+  };
+  return returnObj;
 };
 
 // Видалення токена (при виході)
