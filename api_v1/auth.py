@@ -19,4 +19,9 @@ router.include_router(
 )
 
 # /register
-router.include_router(fastapi_users_router.get_register_router(UserRead, UserCreate))
+router.include_router(
+    fastapi_users_router.get_register_router(
+        UserRead,
+        UserCreate,
+    )
+)

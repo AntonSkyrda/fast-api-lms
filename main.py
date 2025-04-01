@@ -2,22 +2,23 @@ from contextlib import asynccontextmanager
 
 import uvicorn
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from typing import AsyncGenerator
 
 from api_v1 import router as router_v1
 from core.config import settings
-from core.models import BaseModel, db_helper
+from core.models import db_helper
 
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
-    async with db_helper.engine.begin() as conn:
-        await conn.run_sync(BaseModel.metadata.create_all)
+async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+    # startup
     yield
+    # shutdown
+    await db_helper.dispose()
 
 
 app = FastAPI(lifespan=lifespan)
-<<<<<<< HEAD
-=======
 
 
 origins = [
@@ -33,8 +34,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
->>>>>>> 8fa12f4 (change auth logic, add cookie saving)
 app.include_router(router=router_v1, prefix=settings.api_v1_prefix)
 
 
