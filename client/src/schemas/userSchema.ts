@@ -1,17 +1,32 @@
 import { z } from "zod";
 
 export const userSchema = z.object({
-  id: z.number().int().optional(),
-  first_name: z.string().max(150).optional(),
-  last_name: z.string().max(150).optional(),
-  email: z.string().email().max(254).optional(),
-  role: z.union([z.literal("teacher"), z.literal("student")]),
+  id: z.number().int(),
+  email: z.string().email(),
+  is_active: z.boolean(),
+  is_superuser: z.boolean(),
+  is_verified: z.boolean(),
+  first_name: z.string(),
+  last_name: z.string(),
+  father_name: z.string(),
+  is_teacher: z.boolean(),
+  is_student: z.boolean(),
 });
 
 export const studentSchema = userSchema.extend({
-  role: z.literal("student"),
+  is_student: z.literal(true),
 });
 
 export const teacherSchema = userSchema.extend({
-  role: z.literal("teacher"),
+  is_teacher: z.literal(true),
+});
+
+export const superuserSchema = userSchema.extend({
+  is_superuser: z.literal(true),
+});
+
+// Схема для студента-викладача (якщо потрібно)
+export const studentTeacherSchema = userSchema.extend({
+  is_student: z.literal(true),
+  is_teacher: z.literal(true),
 });
