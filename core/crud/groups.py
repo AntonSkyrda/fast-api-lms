@@ -89,3 +89,13 @@ async def add_student_to_group(
         await session.commit()
         await session.refresh(group)
     return group
+
+
+async def remove_student_from_group(
+    session: AsyncSession, group: Group, student: User
+) -> Group:
+    if student in group.students:
+        group.students.remove(student)
+        await session.commit()
+        await session.refresh(group)
+    return group

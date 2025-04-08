@@ -124,3 +124,30 @@ async def add_student_to_group_endpoint(
         student=student,
     )
     return updated_group
+
+
+@router.delete("/{group_id}/students/{student_id}/", response_model=GroupRead)
+async def remove_student_from_group_endpoint(
+    group_id: int,
+    student_id: int,
+    session: AsyncSession = Depends(db_helper.session_getter),
+):
+    group = await crud.get_group(session=session, group_id=group_id)
+    if not group:
+        raise HTTPException(
+            status_code=404, detail=f"Group with id {group_id} not found"
+        )
+
+    student = await session.get(User, student_id)
+    if not student:
+        raise HTTPException(
+            status_code=404, detail=f"Student with id {student_id} not found"
+        )
+
+    if student not in group.students:
+        raise HTTPException(
+            status_code=400, detail="Student is not a member of the group"
+        )
+
+    group = await crud.remove_student_from_group(session, group, student)
+    return group
