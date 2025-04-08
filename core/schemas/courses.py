@@ -20,6 +20,6 @@ class CourseUpdate(BaseModel):
 
 class CourseRead(CourseBase):
     id: int
-    groups: list[GroupReadShallow] | None
+    groups: list["GroupReadShallow"] | None
 
     model_config = ConfigDict(from_attributes=True)
