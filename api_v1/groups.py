@@ -1,7 +1,8 @@
 from fastapi import APIRouter, HTTPException, status, Depends
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.models import db_helper
+from core.models import db_helper, User
 from core.schemas.groups import GroupRead, GroupCreate, GroupUpdate
 from core.crud import groups as crud
 
@@ -88,3 +89,38 @@ async def delete_group(
         )
     deleted_group = await crud.delete_group(session=session, group_id=group_id)
     return deleted_group
+
+
+@router.post("/{group_id}/students/{user_id}/", response_model=GroupRead)
+async def add_student_to_group_endpoint(
+    group_id: int,
+    user_id: int,
+    session: AsyncSession = Depends(db_helper.session_getter),
+):
+    group = await crud.get_group(session=session, group_id=group_id)
+    if group is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Group with id {group_id} not found",
+        )
+
+    result = await session.execute(select(User).where(User.id == user_id))
+    student = result.scalar_one_or_none()
+    if student is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"User with id {user_id} not found",
+        )
+
+    if not student.is_student:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User is not a student",
+        )
+
+    updated_group = await crud.add_student_to_group(
+        session=session,
+        group=group,
+        student=student,
+    )
+    return updated_group

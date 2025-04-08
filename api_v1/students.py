@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
+from sqlalchemy.orm import selectinload
 
 from core.models.user import User
 from core.models import db_helper
@@ -12,7 +13,9 @@ router = APIRouter(prefix="/students", tags=["Students"])
 
 @router.get("/", response_model=list[UserRead])
 async def get_students(session: AsyncSession = Depends(db_helper.session_getter)):
-    result = await session.execute(select(User).where(User.is_student.is_(True)))
+    result = await session.execute(
+        select(User).options(selectinload(User.group)).where(User.is_student.is_(True))
+    )
     students = result.scalars().all()
     if not students:
         raise HTTPException(
