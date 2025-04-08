@@ -9,6 +9,7 @@ from .course_group_association import course_group_association_table
 
 if TYPE_CHECKING:
     from .course import Course
+    from .user import User
 
 
 class Group(IdIntPkMixin, BaseModel):
@@ -19,3 +20,5 @@ class Group(IdIntPkMixin, BaseModel):
         secondary=course_group_association_table,
         back_populates="groups",
     )
+
+    students: Mapped[list["User"]] = relationship("User", back_populates="group")

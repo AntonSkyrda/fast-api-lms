@@ -3,6 +3,7 @@ from pydantic import BaseModel, ConfigDict
 
 if TYPE_CHECKING:
     from .courses import CourseRead
+    from .user import UserReadShallow
 
 
 class GroupBase(BaseModel):
@@ -23,7 +24,8 @@ class GroupUpdate(BaseModel):
 
 class GroupRead(GroupBase):
     id: int
-    courses: list["CourseRead"] | None
+    courses: list["CourseRead"] | None = None
+    students: list["UserReadShallow"] | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -34,5 +36,7 @@ class GroupReadShallow(GroupBase):
 
 
 from .courses import CourseRead
+from .user import UserReadShallow
 
 GroupRead.model_rebuild()
+GroupReadShallow.model_rebuild()

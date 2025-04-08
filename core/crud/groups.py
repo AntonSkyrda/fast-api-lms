@@ -3,19 +3,31 @@ from sqlalchemy.engine import Result
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.models import Group
+from core.models import Group, User, Course
 from core.schemas.groups import GroupCreate, GroupUpdate
 
 
 async def get_group(session: AsyncSession, group_id: int) -> Group | None:
     result = await session.execute(
-        select(Group).options(selectinload(Group.courses)).where(Group.id == group_id)
+        select(Group)
+        .options(
+            selectinload(Group.courses).selectinload(Course.groups),
+            selectinload(Group.students),
+        )
+        .where(Group.id == group_id)
     )
     return result.scalars().first()
 
 
 async def get_groups(session: AsyncSession) -> list[Group]:
-    stmt = select(Group).order_by(Group.id).options(selectinload(Group.courses))
+    stmt = (
+        select(Group)
+        .order_by(Group.id)
+        .options(
+            selectinload(Group.courses).selectinload(Course.groups),
+            selectinload(Group.students),
+        )
+    )
     result: Result = await session.execute(stmt)
     groups = result.scalars().all()
     return list(groups)
@@ -28,7 +40,12 @@ async def create_group(session: AsyncSession, group_in: GroupCreate) -> Group:
     await session.refresh(group)
 
     result = await session.execute(
-        select(Group).options(selectinload(Group.courses)).where(Group.id == group.id)
+        select(Group)
+        .options(
+            selectinload(Group.courses),
+            selectinload(Group.students),
+        )
+        .where(Group.id == group.id)
     )
 
     return result.scalar_one()
@@ -60,4 +77,25 @@ async def delete_group(session: AsyncSession, group_id: int) -> Group | None:
     stmt = delete(Group).where(Group.id == group_id)
     await session.execute(stmt)
     await session.commit()
+    return group
+
+
+async def add_student_to_group(
+    session: AsyncSession, group: Group, student: User
+) -> Group:
+    if student not in group.students:
+        group.students.append(student)
+
+        await session.commit()
+        await session.refresh(group)
+    return group
+
+
+async def remove_student_from_group(
+    session: AsyncSession, group: Group, student: User
+) -> Group:
+    if student in group.students:
+        group.students.remove(student)
+        await session.commit()
+        await session.refresh(group)
     return group
