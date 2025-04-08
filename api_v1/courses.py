@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from core.models import db_helper
 from core.schemas.courses import CourseRead, CourseCreate, CourseUpdate
 from core.crud import courses as crud
+from core.crud.groups import get_group
 
 
 router = APIRouter(prefix="/courses", tags=["Courses"])
@@ -86,3 +87,29 @@ async def delete_course(
         )
     deleted_course = await crud.delete_course(session=session, course_id=course_id)
     return deleted_course
+
+
+@router.post("/{course_id}/groups/{group_id}/", response_model=CourseRead)
+async def add_group_to_course_endpoint(
+    course_id: int,
+    group_id: int,
+    session: AsyncSession = Depends(db_helper.session_getter),
+):
+    course = await crud.get_course(session=session, course_id=course_id)
+    if course is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Course with id {course_id} not found",
+        )
+
+    group = await get_group(session=session, group_id=group_id)
+    if group is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Group with id {group_id} not found",
+        )
+
+    updated_course = await crud.add_group_to_course(
+        session=session, course=course, group=group
+    )
+    return updated_course

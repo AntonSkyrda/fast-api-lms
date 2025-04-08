@@ -1,8 +1,7 @@
 from typing import TYPE_CHECKING
 from pydantic import BaseModel, ConfigDict
 
-if TYPE_CHECKING:
-    from .groups import GroupRead
+from .groups import GroupReadShallow
 
 
 class CourseBase(BaseModel):
@@ -21,11 +20,6 @@ class CourseUpdate(BaseModel):
 
 class CourseRead(CourseBase):
     id: int
-    groups: list["GroupRead"] | None
+    groups: list[GroupReadShallow] | None
 
     model_config = ConfigDict(from_attributes=True)
-
-
-from .groups import GroupRead
-
-CourseRead.model_rebuild()

@@ -3,7 +3,7 @@ from sqlalchemy.engine import Result
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.models import Course
+from core.models import Course, Group
 from core.schemas.courses import CourseCreate, CourseUpdate
 
 
@@ -64,4 +64,14 @@ async def delete_course(session: AsyncSession, course_id: int) -> Course | None:
     stmt = delete(Course).where(Course.id == course_id)
     await session.execute(stmt)
     await session.commit()
+    return course
+
+
+async def add_group_to_course(
+    session: AsyncSession, course: Course, group: Group
+) -> Course:
+    if group not in course.groups:
+        course.groups.append(group)
+        await session.commit()
+        await session.refresh(course)
     return course

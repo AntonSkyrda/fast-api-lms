@@ -28,6 +28,11 @@ class GroupRead(GroupBase):
     model_config = ConfigDict(from_attributes=True)
 
 
+class GroupReadShallow(GroupBase):
+    id: int
+    model_config = ConfigDict(from_attributes=True)
+
+
 from .courses import CourseRead
 
 GroupRead.model_rebuild()
