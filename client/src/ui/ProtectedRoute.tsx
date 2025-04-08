@@ -3,6 +3,8 @@
 import { ReactNode, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getToken } from "../lib/utils/manageCookie";
+import { useUser } from "../features/authentication/useUser";
+import Spinner from "./Spinner";
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -10,10 +12,8 @@ interface ProtectedRouteProps {
 
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
   const navigate = useNavigate();
-  // const isAuthenticated = useIsAuthenticated();
   const isAuthenticated = !!getToken();
-  console.log(isAuthenticated);
-
+  const { isLoading } = useUser();
   useEffect(
     function () {
       // console.log("Component mounted");
@@ -23,7 +23,7 @@ export default function ProtectedRoute({ children }: ProtectedRouteProps) {
     },
     [isAuthenticated, navigate],
   );
-
+  if (isLoading) return <Spinner />;
   if (!isAuthenticated) return null;
 
   return children;

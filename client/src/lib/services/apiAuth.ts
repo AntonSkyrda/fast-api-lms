@@ -59,8 +59,5 @@ export async function login({
     throw new Error(
       " There is an error with authentication service. Please contact administrator.",
     );
-
-  const user = await getUserByToken(token);
-
-  return { token, user };
+  return { token };
 }

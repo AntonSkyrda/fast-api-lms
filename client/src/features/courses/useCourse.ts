@@ -1,10 +1,10 @@
-import useAuthHeader from "react-auth-kit/hooks/useAuthHeader";
 import { useQuery } from "@tanstack/react-query";
 import { getCourseById } from "../../lib/services/apiCourses";
 import { useParams } from "react-router-dom";
+import { getToken } from "../../lib/utils/manageCookie";
 
 export function useCourse() {
-  const authHeader = useAuthHeader()!;
+  const token = getToken()!;
   const { courseId } = useParams();
   const {
     isLoading,
@@ -13,8 +13,8 @@ export function useCourse() {
   } = useQuery({
     queryKey: ["course", courseId],
     queryFn: () => {
-      if (!courseId) return null;
-      return getCourseById(courseId, authHeader);
+      if (!courseId || token) return null;
+      return getCourseById(courseId, token);
     },
     enabled: !!courseId,
     retry: false,

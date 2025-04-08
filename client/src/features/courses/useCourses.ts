@@ -1,13 +1,16 @@
-import useAuthHeader from "react-auth-kit/hooks/useAuthHeader";
 import { useQuery } from "@tanstack/react-query";
 import { getCourses } from "../../lib/services/apiCourses";
+import { getToken } from "../../lib/utils/manageCookie";
 
 export function useCourses() {
-  const authHeader = useAuthHeader()!;
+  const token = getToken()!;
 
   const { isLoading, data: courses } = useQuery({
     queryKey: ["courses"],
-    queryFn: () => getCourses(authHeader),
+    queryFn: () => {
+      if (!token) return null;
+      getCourses(token.toString());
+    },
   });
 
   return { isLoading, courses };

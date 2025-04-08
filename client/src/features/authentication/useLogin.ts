@@ -1,11 +1,10 @@
 import { login as loginApi } from "../../lib/services/apiAuth";
 // import useSignIn from "react-auth-kit/hooks/useSignIn";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { saveToken } from "../../lib/utils/manageCookie";
 
 export function useLogin() {
-  const queryClient = useQueryClient();
   const navigate = useNavigate();
   // const signIn = useSignIn();
 
@@ -21,7 +20,7 @@ export function useLogin() {
       username: string;
       password: string;
     }) => loginApi({ username, password }),
-    onSuccess: ({ token, user }) => {
+    onSuccess: ({ token }) => {
       // const signInConfig = {
       //   auth: {
       //     token: token.access_token,
@@ -41,8 +40,8 @@ export function useLogin() {
       // }
       // console.log("✅ Успішно збережено токен!");
 
+      // queryClient.setQueryData(["user"], user);
       saveToken(token);
-      queryClient.setQueryData(["user"], user);
       navigate("/home", { replace: true });
     },
   });
