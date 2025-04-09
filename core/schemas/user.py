@@ -16,7 +16,7 @@ class UserBase(BaseModel):
 
 
 class UserRead(UserBase, schemas.BaseUser[UserIdType]):
-    group: Optional["GroupReadShallow"] = None
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserCreate(UserBase, schemas.BaseUserCreate):
@@ -31,7 +31,13 @@ class UserReadShallow(UserBase, schemas.BaseUser[UserIdType]):
     model_config = ConfigDict(from_attributes=True)
 
 
+class UserReadRelated(UserRead):
+    group: "GroupReadShallow | None" = None
+    courses: list["CourseRead | None "] = None
+
+
 from .groups import GroupReadShallow
+from .courses import CourseRead
 
 UserRead.model_rebuild()
 UserReadShallow.model_rebuild()

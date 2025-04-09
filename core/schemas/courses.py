@@ -1,7 +1,7 @@
-from typing import TYPE_CHECKING
 from pydantic import BaseModel, ConfigDict
 
 from .groups import GroupReadShallow
+from .user import UserReadShallow
 
 
 class CourseBase(BaseModel):
@@ -10,16 +10,18 @@ class CourseBase(BaseModel):
 
 
 class CourseCreate(CourseBase):
-    pass
+    teacher_id: int | None = None
 
 
 class CourseUpdate(BaseModel):
-    title: str | None = None
+    name: str | None = None
     description: str | None = None
+    teacher_id: int | None = None
 
 
 class CourseRead(CourseBase):
     id: int
-    groups: list["GroupReadShallow"] | None
+    teacher: UserReadShallow | None = None
+    groups: list[GroupReadShallow] | None = None
 
     model_config = ConfigDict(from_attributes=True)
