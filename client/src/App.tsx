@@ -1,8 +1,5 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-// import AuthProvider from "react-auth-kit";
-// import createStore from "react-auth-kit/createStore";
-import { Toaster } from "react-hot-toast";
 
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import ProtectedRoute from "./ui/ProtectedRoute";
@@ -16,6 +13,9 @@ import Lessons from "./pages/Lessons";
 import Tasks from "./pages/Tasks";
 import Users from "./pages/Users";
 import Course from "./pages/Course";
+import { AuthProvider } from "./contexts/AuthContext";
+import Account from "./pages/Account";
+import ProtectedAdminRoute from "./ui/ProtectedAdminRoute";
 
 function App() {
   const queryClient = new QueryClient({
@@ -27,66 +27,39 @@ function App() {
     },
   });
 
-  // const authStore = createStore({
-  //   authName: "_bearerAuth",
-  //   authType: "cookie",
-  //   cookieDomain: window.location.hostname,
-  //   cookieSecure: window.location.protocol === "https:",
-  // });
-
   return (
-    <QueryClientProvider client={queryClient}>
-      {/* <AuthProvider store={authStore}> */}
-      <ReactQueryDevtools />
+    <BrowserRouter>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <ReactQueryDevtools />
+          <Routes>
+            <Route
+              element={
+                <ProtectedRoute>
+                  <AppLayout />
+                </ProtectedRoute>
+              }
+            >
+              <Route index element={<Navigate replace to="home" />} />
+              <Route path="home" element={<Home />} />
+              <Route path="courses" element={<Courses />} />
+              <Route path="courses/:courseId" element={<Course />} />
+              <Route path="groups" element={<Groups />} />
+              <Route path="lessons" element={<Lessons />} />
+              <Route path="tasks" element={<Tasks />} />
+              <Route path="account" element={<Account />} />
+              <Route path="lms-admin-route" element={<ProtectedAdminRoute />}>
+                <Route path="users" element={<Users />} />
+                <Route path="settings" element={<Users />} />
+              </Route>
+            </Route>
 
-      <BrowserRouter>
-        <Routes>
-          <Route
-            element={
-              <ProtectedRoute>
-                <AppLayout />
-              </ProtectedRoute>
-            }
-          >
-            <Route index element={<Navigate replace to="home" />} />
-            <Route path="home" element={<Home />} />
-            <Route path="courses" element={<Courses />} />
-            <Route path="courses/:courseId" element={<Course />} />
-            <Route path="groups" element={<Groups />} />
-            <Route path="lessons" element={<Lessons />} />
-            <Route path="tasks" element={<Tasks />} />
-            <Route path="users" element={<Users />} />
-          </Route>
-
-          <Route path="login" element={<Login />} />
-          <Route path="*" element={<PageNotFound />} />
-        </Routes>
-      </BrowserRouter>
-
-      <Toaster
-        position="top-center"
-        gutter={12}
-        containerStyle={{
-          margin: "8px",
-        }}
-        toastOptions={{
-          success: {
-            duration: 3000,
-          },
-          error: {
-            duration: 5000,
-          },
-          style: {
-            fontSize: "16px",
-            maxWidth: "500px",
-            padding: "16px 24px",
-            backgroundColor: "var(--color-grey-0)",
-            color: "var(--color-grey-700",
-          },
-        }}
-      />
-      {/* </AuthProvider> */}
-    </QueryClientProvider>
+            <Route path="login" element={<Login />} />
+            <Route path="*" element={<PageNotFound />} />
+          </Routes>
+        </AuthProvider>
+      </QueryClientProvider>
+    </BrowserRouter>
   );
 }
 

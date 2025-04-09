@@ -1,43 +1,19 @@
 import axios from "axios";
-
 import { authSchema } from "../../schemas/authSchema";
+import { getToken } from "../utils/manageCookie";
 import { z } from "zod";
 import { userSchema } from "../../schemas/userSchema";
 
-type token = z.infer<typeof authSchema>;
-
-export async function getUserByToken(token: token) {
-  const res = await axios
-    .get(`${import.meta.env.VITE_BASE_URL}/api/v1/users/me`, {
-      headers: {
-        accept: "application/json",
-        Authorization: `${token.token_type} ${token.access_token}`,
-      },
-      withCredentials: true,
-    })
-    .catch(() => {
-      throw new Error("Неможливо отримати дані користувача.");
-    });
-
-  const { success, data: user } = userSchema.safeParse(res.data);
-  if (!success)
-    throw new Error(
-      " There is an error with authentication service. Please contact administrator.",
-    );
-
-  return user;
-}
-
 export async function login({
-  username,
+  email,
   password,
 }: {
-  username: string;
+  email: string;
   password: string;
 }) {
   const formData = new URLSearchParams();
   formData.append("grant_type", "password");
-  formData.append("username", username);
+  formData.append("username", email);
   formData.append("password", password);
   formData.append("scope", "");
   formData.append("client_id", "string");
@@ -52,7 +28,7 @@ export async function login({
       withCredentials: true,
     })
     .catch(() => {
-      throw new Error(`Невірний Username чи Пароль.`);
+      throw new Error(`Невірний Email чи Пароль.`);
     });
   const { success, data: token } = authSchema.safeParse(res.data);
   if (!success)
@@ -60,4 +36,42 @@ export async function login({
       " There is an error with authentication service. Please contact administrator.",
     );
   return { token };
+}
+
+export async function logout() {
+  const token = getToken();
+  if (!token) throw new Error("Ви не авторизовані!");
+
+  await axios
+    .post(
+      `${import.meta.env.VITE_BASE_URL}/api/v1/auth/logout`,
+      {},
+      {
+        headers: {
+          accept: "application/json",
+          Authorization: `${token?.token_type} ${token?.access_token}`,
+        },
+        withCredentials: true,
+      },
+    )
+    .catch(() => {
+      throw new Error("Сталася помилка при Log out.");
+    });
+}
+
+export async function addUser(data: z.infer<typeof userSchema>) {
+  const token = getToken();
+  if (!token) throw new Error("Ви не авторизовані!");
+
+  const res = await axios.post(
+    `${import.meta.env.VITE_BASE_URL}/api/v1/auth/register`,
+    data,
+  );
+
+  const { success, data: user } = userSchema.safeParse(res.data);
+  if (!success)
+    throw new Error(
+      " There is an error with authentication service. Please contact administrator.",
+    );
+  return user;
 }

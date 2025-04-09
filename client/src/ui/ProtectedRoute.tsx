@@ -1,30 +1,17 @@
-// import useIsAuthenticated from "react-auth-kit/hooks/useIsAuthenticated";
-
-import { ReactNode, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { getToken } from "../lib/utils/manageCookie";
-import { useUser } from "../features/authentication/useUser";
+import { ReactNode } from "react";
+import { Navigate } from "react-router-dom";
 import Spinner from "./Spinner";
+import { useAuth } from "../contexts/AuthContext";
 
 interface ProtectedRouteProps {
   children: ReactNode;
 }
 
 export default function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const navigate = useNavigate();
-  const isAuthenticated = !!getToken();
-  const { isLoading } = useUser();
-  useEffect(
-    function () {
-      // console.log("Component mounted");
-      if (!isAuthenticated) {
-        navigate("/login");
-      }
-    },
-    [isAuthenticated, navigate],
-  );
+  const { isAuthenticated, isLoading } = useAuth();
+
   if (isLoading) return <Spinner />;
-  if (!isAuthenticated) return null;
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
 
   return children;
 }

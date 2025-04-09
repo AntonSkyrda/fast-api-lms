@@ -10,41 +10,41 @@ import { Input } from "../../ui/input";
 import { Button } from "../../ui/button";
 
 import { FieldValues, useForm } from "react-hook-form";
-import { useLogin } from "./useLogin";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginFormSchema } from "../../schemas/loginFormSchema";
 import { z } from "zod";
+import { useAuth } from "../../contexts/AuthContext";
 
 export default function LoginForm() {
   const form = useForm<z.infer<typeof loginFormSchema>>({
     resolver: zodResolver(loginFormSchema),
     defaultValues: {
-      username: "",
-      password: "",
+      email: "admin@admin.com",
+      password: "password",
     },
   });
 
-  const { login, isPending, loginError } = useLogin();
+  const { login, isLoading, loginError } = useAuth();
 
   function onSubmit(data: FieldValues) {
-    const { username, password } = data;
-    login({ username, password });
+    const { email, password } = data;
+    login(email, password);
   }
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
         <FormField
-          name="username"
+          name="email"
           render={({ field }) => (
             <FormItem>
-              <FormLabel htmlFor="username">Username чи Email</FormLabel>
+              <FormLabel htmlFor="email">Email</FormLabel>
               <FormControl>
                 <Input
-                  type="username"
-                  id="username"
-                  autoComplete="username"
-                  disabled={isPending}
+                  type="email"
+                  id="email"
+                  autoComplete="email"
+                  disabled={isLoading}
                   {...field}
                 />
               </FormControl>
@@ -62,7 +62,7 @@ export default function LoginForm() {
                   type="password"
                   id="password"
                   autoComplete="password"
-                  disabled={isPending}
+                  disabled={isLoading}
                   {...field}
                 />
               </FormControl>
@@ -71,12 +71,10 @@ export default function LoginForm() {
           )}
         />
         <div className="flex flex-col items-center justify-center gap-5">
-          <Button disabled={isPending} size="lg" type="submit">
-            {isPending ? "Вхід..." : "Увійти"}
+          <Button disabled={isLoading} size="lg" type="submit">
+            {isLoading ? "Вхід..." : "Увійти"}
           </Button>
-          {loginError && (
-            <p className="text-destructive">{loginError.message}</p>
-          )}
+          {loginError && <p className="text-destructive">{loginError}</p>}
         </div>
       </form>
     </Form>

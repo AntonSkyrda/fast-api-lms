@@ -1,0 +1,33 @@
+import { useState } from "react";
+import { buttonVariants } from "../../ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "../../ui/dialog";
+import AddUserForm from "./AddUserForm";
+
+function AddUser() {
+  const [isOpen, setIsOpen] = useState(false);
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger className={buttonVariants({ variant: "default" })}>
+        Додати користувачв
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Додавання нового користувача</DialogTitle>
+        </DialogHeader>
+        <DialogDescription className="mb-6">
+          Додайте нового студента, викладача чи адміністратора
+        </DialogDescription>
+        <AddUserForm setIsOpen={setIsOpen} />
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+export default AddUser;
