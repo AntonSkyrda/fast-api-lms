@@ -4,7 +4,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../../ui/dropdownMenu";
+} from "../../ui/DropdownMenu";
 import {
   SidebarMenu,
   SidebarMenuButton,

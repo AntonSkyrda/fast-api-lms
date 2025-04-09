@@ -1,30 +1,12 @@
-import { Button, buttonVariants } from "../../ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "../../ui/dialog";
+import { Button } from "../../ui/Button";
+import AddCourse from "./AddCourse";
 
 function CoursesActions() {
   return (
-    <div className="flex flex-row gap-5">
+    <div className="flex flex-row items-center gap-5">
+      <span>Пошук</span>
       <Button variant="outline">Сортувати</Button>
-      <Dialog>
-        <DialogTrigger className={buttonVariants({ variant: "default" })}>
-          Створити новий курс
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Створення нового курсу</DialogTitle>
-            <DialogDescription>
-              Створіть курс для своїх студентів
-            </DialogDescription>
-          </DialogHeader>
-        </DialogContent>
-      </Dialog>
+      <AddCourse />
     </div>
   );
 }

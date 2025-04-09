@@ -11,6 +11,7 @@ from .mixins.id_int_pk import IdIntPkMixin
 if TYPE_CHECKING:
     from sqlalchemy.ext.asyncio import AsyncSession
     from .group import Group
+    from .course import Course
 
 
 class User(BaseModel, IdIntPkMixin, SQLAlchemyBaseUserTable[UserIdType]):
@@ -25,6 +26,10 @@ class User(BaseModel, IdIntPkMixin, SQLAlchemyBaseUserTable[UserIdType]):
     )
 
     group: Mapped["Group"] = relationship("Group", back_populates="students")
+
+    courses: Mapped[list["Course"]] = relationship(
+        "Course", back_populates="teacher", cascade="all, delete-orphan"
+    )
 
     @classmethod
     def get_db(cls, session: "AsyncSession") -> SQLAlchemyUserDatabase:

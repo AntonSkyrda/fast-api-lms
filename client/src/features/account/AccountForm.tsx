@@ -10,10 +10,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../../ui/form";
-import { Input } from "../../ui/input";
-import { Checkbox } from "../../ui/checkbox";
-import { Button } from "../../ui/button";
+} from "../../ui/Form";
+import { Input } from "../../ui/Input";
+import { Checkbox } from "../../ui/Checkbox";
+import { Button } from "../../ui/Button";
 import Spinner from "../../ui/Spinner";
 import { useUpdateUser } from "./useUpdateUser";
 

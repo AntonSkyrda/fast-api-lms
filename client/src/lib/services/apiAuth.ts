@@ -30,7 +30,7 @@ export async function login({
     .catch(() => {
       throw new Error(`Невірний Email чи Пароль.`);
     });
-  const { success, data: token } = authSchema.safeParse(res.data);
+  const { success, data: token } = await authSchema.safeParseAsync(res.data);
   if (!success)
     throw new Error(
       " There is an error with authentication service. Please contact administrator.",
@@ -68,7 +68,7 @@ export async function addUser(data: z.infer<typeof userSchema>) {
     data,
   );
 
-  const { success, data: user } = userSchema.safeParse(res.data);
+  const { success, data: user } = await userSchema.safeParseAsync(res.data);
   if (!success)
     throw new Error(
       " There is an error with authentication service. Please contact administrator.",
