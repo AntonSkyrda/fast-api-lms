@@ -6,15 +6,15 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "../../ui/card";
-import { courseSchema } from "../../schemas/coursesSchema";
-import { Button, buttonVariants } from "../../ui/button";
+} from "../../ui/Card";
+import { courseSimpleSchema } from "../../schemas/coursesSchema";
+import { Button, buttonVariants } from "../../ui/Button";
 import { NavLink } from "react-router-dom";
-import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "../../ui/Popover";
 import CourseCardActions from "./CourseCardActions";
 import { EllipsisVertical } from "lucide-react";
 
-type Course = z.infer<typeof courseSchema>;
+type Course = z.infer<typeof courseSimpleSchema>;
 
 interface CourseCardProps {
   course: Course;
@@ -45,7 +45,7 @@ function CourseCard({ course }: CourseCardProps) {
             </Button>
           </PopoverTrigger>
           <PopoverContent sideOffset={8} className="w-48">
-            <CourseCardActions />
+            <CourseCardActions course={course} />
           </PopoverContent>
         </Popover>
       </CardFooter>

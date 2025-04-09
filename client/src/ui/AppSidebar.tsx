@@ -1,4 +1,12 @@
-import { Home, Folders, Users, ClipboardList, Sheet } from "lucide-react";
+import {
+  Home,
+  Folders,
+  Users,
+  ClipboardList,
+  Sheet,
+  Settings,
+  SquareUser,
+} from "lucide-react";
 
 import {
   Sidebar,
@@ -12,38 +20,55 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  SidebarSeparator,
 } from "../ui/Sidebar";
 import { NavLink } from "react-router-dom";
+import ShortUser from "../features/account/ShortUser";
+import { useAuth } from "../contexts/AuthContext";
 
 const items = [
   {
     title: "Головна",
-    url: "home",
+    url: "/home",
     icon: Home,
   },
   {
     title: "Курси",
-    url: "courses",
+    url: "/courses",
     icon: Folders,
   },
   {
     title: "Групи",
-    url: "groups",
+    url: "/groups",
     icon: Users,
   },
   {
     title: "Заняття",
-    url: "lessons",
+    url: "/lessons",
     icon: Sheet,
   },
   {
     title: "Завдання",
-    url: "tasks",
+    url: "/tasks",
     icon: ClipboardList,
   },
 ];
 
+const adminItems = [
+  {
+    title: "Користувачі",
+    url: "/lms-admin-route/users",
+    icon: SquareUser,
+  },
+  {
+    title: "Налаштування",
+    url: "/lms-admin-route/settings",
+    icon: Settings,
+  },
+];
+
 export default function AppSidebar() {
+  const { user } = useAuth();
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>LMS</SidebarHeader>
@@ -70,12 +95,37 @@ export default function AppSidebar() {
                   </NavLink>
                 </SidebarMenuItem>
               ))}
+              {user?.is_superuser && (
+                <>
+                  <SidebarSeparator />
+                  {adminItems.map((item) => (
+                    <SidebarMenuItem key={item.title}>
+                      <NavLink to={item.url}>
+                        {({ isActive }) => (
+                          <SidebarMenuButton
+                            tooltip={item.title}
+                            asChild
+                            isActive={isActive}
+                          >
+                            <div>
+                              <item.icon />
+                              <span>{item.title}</span>
+                            </div>
+                          </SidebarMenuButton>
+                        )}
+                      </NavLink>
+                    </SidebarMenuItem>
+                  ))}
+                </>
+              )}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
       <SidebarRail />
-      <SidebarFooter>User</SidebarFooter>
+      <SidebarFooter>
+        <ShortUser />
+      </SidebarFooter>
     </Sidebar>
   );
 }

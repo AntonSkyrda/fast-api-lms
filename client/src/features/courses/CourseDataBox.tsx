@@ -18,7 +18,7 @@ function CourseDataBox({ course }: CourseDataBoxProps) {
           <Heading as="h4">Про курс:</Heading>
           <p>{course.description}</p>
         </div>
-        {course.teacher.id && (
+        {course.teacher?.id && (
           <div className="grid grid-cols-[10rem_1fr] items-baseline">
             <Heading as="h4">Викладач:</Heading>
             <p>
@@ -26,18 +26,18 @@ function CourseDataBox({ course }: CourseDataBoxProps) {
             </p>
           </div>
         )}
-        {course.groups[0].id && (
+        {/* {course.groups[0]?.id && (
           <div className="grid grid-cols-[10rem_1fr] items-baseline">
             <Heading as="h4">Групи:</Heading>
             <ul className="flex flex-row gap-3">
-              {course.groups.map((group, index) => (
+              {course.groups?.map((group, index) => (
                 <li key={group.id}>
                   {`${group.name}${index === course.groups.length - 1 ? "" : ","}`}
                 </li>
               ))}
             </ul>
           </div>
-        )}
+        )} */}
       </section>
       <footer className="bg-norway-200 gap-5 px-16 py-7 text-right">
         Наступне заняття:

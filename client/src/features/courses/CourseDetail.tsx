@@ -3,15 +3,20 @@ import Spinner from "../../ui/Spinner";
 import Empty from "../../ui/Empty";
 import Heading from "../../ui/Heading";
 import CourseDataBox from "./CourseDataBox";
-import { Button, buttonVariants } from "../../ui/button";
-import { Pencil, Plus, Trash } from "lucide-react";
+import { Button, buttonVariants } from "../../ui/Button";
+import { Plus } from "lucide-react";
 import { NavLink } from "react-router-dom";
+import toast from "react-hot-toast";
+import DeleteCourse from "./DeleteCourse";
+import UpdateCourse from "./UpdateCourse";
 
 function CourseDetail() {
-  const { isLoading, course, error } = useCourse();
+  const { isLoading, course, courseError } = useCourse();
 
   if (isLoading) return <Spinner />;
-  if (error || !course) return <Empty resourceName="Курс" />;
+  if (courseError) toast.error(courseError.message);
+  if (!course) return <Empty resourceName="Курс" />;
+
   return (
     <div className="flex flex-col gap-10 px-10 py-4">
       <header className="grid grid-cols-[auto_1fr] grid-rows-2 gap-5">
@@ -28,24 +33,14 @@ function CourseDetail() {
       <CourseDataBox course={course} />
 
       <div className="flex flex-row justify-end gap-5">
-        <Button variant="destructive">
-          <span>
-            <Trash />
-          </span>
-          Видалити
-        </Button>
+        <DeleteCourse course={course} />
         <Button variant="outline">
           <span>
             <Plus />
           </span>
           Додати заннятя
         </Button>
-        <Button variant="outline">
-          <span>
-            <Pencil />
-          </span>
-          Редагувати
-        </Button>
+        <UpdateCourse course={course} />
       </div>
     </div>
   );

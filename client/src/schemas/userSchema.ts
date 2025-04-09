@@ -1,8 +1,9 @@
 import { z } from "zod";
 
 export const userSchema = z.object({
-  id: z.number().int(),
-  email: z.string().email(),
+  id: z.number().int().optional(),
+  password: z.string().optional(),
+  email: z.string().email({ message: "Некоректний Email" }),
   is_active: z.boolean(),
   is_superuser: z.boolean(),
   is_verified: z.boolean(),
