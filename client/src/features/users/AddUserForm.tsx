@@ -6,17 +6,22 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../../ui/form";
+} from "../../ui/Form";
 import { userSchema } from "../../schemas/userSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "../../ui/input";
+import { Input } from "../../ui/Input";
 
 import { z } from "zod";
-import { Checkbox } from "../../ui/checkbox";
-import { Button } from "../../ui/button";
+import { Checkbox } from "../../ui/Checkbox";
+import { Button } from "../../ui/Button";
 import { useAddUser } from "./useAddUser";
+import Spinner from "../../ui/Spinner";
 
-function AddUserForm({ setIsOpen }: { setIsOpen: (isOpen: boolean) => void }) {
+function AddUserForm({
+  handleClose,
+}: {
+  handleClose: (isOpen: boolean) => void;
+}) {
   const form = useForm<z.infer<typeof userSchema>>({
     resolver: zodResolver(userSchema),
     defaultValues: {
@@ -39,7 +44,7 @@ function AddUserForm({ setIsOpen }: { setIsOpen: (isOpen: boolean) => void }) {
     const { success, data: userData } = userSchema.safeParse(data);
     if (!success) return;
     addUser(userData);
-    setIsOpen(false);
+    handleClose(false);
   }
 
   return (
@@ -208,7 +213,7 @@ function AddUserForm({ setIsOpen }: { setIsOpen: (isOpen: boolean) => void }) {
         </fieldset>
         <div className="row-span-2">
           <Button variant="default" type="submit">
-            <span>Створити</span>
+            <span>{isLoading ? <Spinner /> : "Створити"}</span>
           </Button>
         </div>
       </form>

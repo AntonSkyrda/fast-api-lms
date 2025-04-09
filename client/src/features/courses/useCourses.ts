@@ -1,17 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { getCourses } from "../../lib/services/apiCourses";
-import { getToken } from "../../lib/utils/manageCookie";
 
 export function useCourses() {
-  const token = getToken()!;
-
-  const { isLoading, data: courses } = useQuery({
+  const {
+    isLoading,
+    data: courses,
+    error: coursesError,
+  } = useQuery({
     queryKey: ["courses"],
-    queryFn: () => {
-      if (!token) return null;
-      getCourses(token.toString());
-    },
+    queryFn: getCourses,
   });
 
-  return { isLoading, courses };
+  return { isLoading, courses, coursesError };
 }

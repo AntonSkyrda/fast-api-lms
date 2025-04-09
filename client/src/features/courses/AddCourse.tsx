@@ -8,26 +8,31 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../../ui/Dialog";
-import AddUserForm from "./AddUserForm";
+import CurseForm from "./CurseForm";
+import { useAuth } from "../../contexts/AuthContext";
 
-function AddUser() {
+function AddCourse() {
   const [isOpen, setIsOpen] = useState(false);
+  const { user } = useAuth();
+
+  if (!user?.is_superuser) return null;
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger className={buttonVariants({ variant: "default" })}>
-        Додати користувачв
+        Створити новий курс
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Додавання нового користувача</DialogTitle>
+          <DialogTitle>Створення нового курсу</DialogTitle>
+          <DialogDescription className="mb-6">
+            Створіть курс для своїх студентів
+          </DialogDescription>
         </DialogHeader>
-        <DialogDescription className="mb-6">
-          Додайте нового студента, викладача чи адміністратора
-        </DialogDescription>
-        <AddUserForm handleClose={setIsOpen} />
+        <CurseForm handleClose={setIsOpen} />
       </DialogContent>
     </Dialog>
   );
 }
 
-export default AddUser;
+export default AddCourse;

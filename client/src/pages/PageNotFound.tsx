@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { useMoveBack } from "../hooks/useMoveBack";
-import { Button, buttonVariants } from "../ui/button";
+import { Button, buttonVariants } from "../ui/Button";
 import Heading from "../ui/Heading";
 
 export default function PageNotFound() {

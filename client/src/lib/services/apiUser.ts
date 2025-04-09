@@ -20,7 +20,7 @@ export async function getUserByToken() {
       throw new Error("Неможливо отримати дані користувача.");
     });
 
-  const { success, data: user } = userSchema.safeParse(res.data);
+  const { success, data: user } = await userSchema.safeParseAsync(res.data);
   if (!success)
     throw new Error(
       " There is an error with authentication service. Please contact administrator.",
@@ -47,7 +47,7 @@ export async function updateUser(data: z.infer<typeof accountFormSchema>) {
       throw new Error("Сталася помилка при Оновленні даних.");
     });
 
-  const { success, data: user } = userSchema.safeParse(res.data);
+  const { success, data: user } = await userSchema.safeParseAsync(res.data);
   if (!success)
     throw new Error(
       " There is an error with authentication service. Please contact administrator.",
