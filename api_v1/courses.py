@@ -113,3 +113,34 @@ async def add_group_to_course_endpoint(
         session=session, course=course, group=group
     )
     return updated_course
+
+
+@router.post("/{course_id}/add-teacher/{teacher_id}", response_model=CourseRead)
+async def assign_teacher_to_course(
+    course_id: int,
+    teacher_id: int,
+    session: AsyncSession = Depends(db_helper.session_getter),
+):
+    course = await crud.add_teacher_to_course(session, course_id, teacher_id)
+
+    if not course:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Course or teacher not found, or teacher is invalid",
+        )
+
+    return course
+
+
+@router.delete("/{course_id}/teacher", response_model=CourseRead)
+async def delete_course_teacher(
+    course_id: int,
+    session: AsyncSession = Depends(db_helper.session_getter),
+):
+    course = await crud.remove_teacher_from_course(session=session, course_id=course_id)
+    if course is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Course with id {course_id} not found",
+        )
+    return course
