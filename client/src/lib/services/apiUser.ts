@@ -55,3 +55,77 @@ export async function updateUser(data: z.infer<typeof accountFormSchema>) {
 
   return user;
 }
+
+export async function getUserById(userId: number) {
+  const token = getToken();
+  if (!token) return null;
+
+  const res = await axios
+    .get(`${import.meta.env.VITE_BASE_URL}/api/v1/users/${userId}`, {
+      headers: {
+        accept: "application/json",
+        Authorization: `${token?.token_type} ${token?.access_token}`,
+      },
+      withCredentials: true,
+    })
+    .catch(() => {
+      throw new Error("Неможливо отримати дані користувача.");
+    });
+
+  const { success, data: user } = await userSchema.safeParseAsync(res.data);
+  if (!success)
+    throw new Error(
+      " There is an error with authentication service. Please contact administrator.",
+    );
+
+  return user;
+}
+
+export async function updateUserById(
+  updateData: z.infer<typeof userSchema>,
+  userId: number,
+) {
+  const token = getToken();
+  if (!token) return null;
+
+  const res = await axios
+    .patch(
+      `${import.meta.env.VITE_BASE_URL}/api/v1/users/${userId}`,
+      updateData,
+      {
+        headers: {
+          accept: "application/json",
+          Authorization: `${token?.token_type} ${token?.access_token}`,
+        },
+        withCredentials: true,
+      },
+    )
+    .catch(() => {
+      throw new Error("Неможливо отримати дані користувача.");
+    });
+
+  const { success, data: user } = await userSchema.safeParseAsync(res.data);
+  if (!success)
+    throw new Error(
+      " There is an error with authentication service. Please contact administrator.",
+    );
+
+  return user;
+}
+
+export async function deleteUserById(userId: number) {
+  const token = getToken();
+  if (!token) return null;
+
+  await axios
+    .delete(`${import.meta.env.VITE_BASE_URL}/api/v1/users/${userId}`, {
+      headers: {
+        accept: "application/json",
+        Authorization: `${token?.token_type} ${token?.access_token}`,
+      },
+      withCredentials: true,
+    })
+    .catch(() => {
+      throw new Error("Неможливо отримати дані користувача.");
+    });
+}

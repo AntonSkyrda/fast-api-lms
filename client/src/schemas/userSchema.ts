@@ -18,6 +18,8 @@ export const studentSchema = userSchema.extend({
   is_student: z.literal(true),
 });
 
+export const studentsSchema = z.array(studentSchema);
+
 export const teacherSchema = userSchema.extend({
   is_teacher: z.literal(true),
 });
