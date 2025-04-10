@@ -1,10 +1,6 @@
 import axios from "axios";
 
-import {
-  courseDetailSchema,
-  courseSimpleSchema,
-  coursesSchema,
-} from "../../schemas/coursesSchema";
+import { courseSimpleSchema, coursesSchema } from "../../schemas/coursesSchema";
 import { getToken } from "../utils/manageCookie";
 import { z } from "zod";
 
@@ -23,6 +19,7 @@ export async function getCourses() {
     .catch(() => {
       throw new Error("Сталася помилка при отриманні курсів.");
     });
+
   const { success, data: courses } = await coursesSchema.safeParseAsync(
     res.data,
   );
@@ -45,7 +42,7 @@ export async function getCourseById(id: string) {
     .catch(() => {
       throw new Error("Такого курсу не існує!");
     });
-  const { success, data: course } = await courseDetailSchema.safeParseAsync(
+  const { success, data: course } = await courseSimpleSchema.safeParseAsync(
     res.data,
   );
   // console.log(error);
@@ -119,4 +116,58 @@ export async function deleteCourse(id: number) {
     .catch(() => {
       throw new Error("Не вдалось видалити цей курс!");
     });
+}
+
+export async function addTeacherToCourse(courseId: number, teacherId: number) {
+  const token = getToken();
+  if (!token) throw new Error("Ви не авторизовані!");
+
+  const res = await axios
+    .post(
+      `${import.meta.env.VITE_BASE_URL}/api/v1/courses/${courseId}/add-teacher/${teacherId}`,
+      {
+        headers: {
+          accept: "application/json",
+          Authorization: `${token?.token_type} ${token?.access_token}`,
+        },
+        withCredentials: true,
+      },
+    )
+    .catch(() => {
+      throw new Error("Не вдалось додати викладача до цього курс!");
+    });
+
+  const { success, data: course } = await courseSimpleSchema.safeParseAsync(
+    res.data,
+  );
+  if (!success) throw new Error(`There is Error with loading Course data`);
+
+  return course;
+}
+
+export async function removeTeacherFromCourse(courseId: number) {
+  const token = getToken();
+  if (!token) throw new Error("Ви не авторизовані!");
+
+  const res = await axios
+    .delete(
+      `${import.meta.env.VITE_BASE_URL}/api/v1/courses/${courseId}/teacher`,
+      {
+        headers: {
+          accept: "application/json",
+          Authorization: `${token?.token_type} ${token?.access_token}`,
+        },
+        withCredentials: true,
+      },
+    )
+    .catch(() => {
+      throw new Error("Не вдалось видалити викладача до цього курс!");
+    });
+
+  const { success, data: course } = await courseSimpleSchema.safeParseAsync(
+    res.data,
+  );
+  if (!success) throw new Error(`There is Error with loading Course data`);
+
+  return course;
 }

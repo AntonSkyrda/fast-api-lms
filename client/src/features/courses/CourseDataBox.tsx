@@ -1,9 +1,9 @@
 import { z } from "zod";
-import { courseDetailSchema } from "../../schemas/coursesSchema";
+import { courseSimpleSchema } from "../../schemas/coursesSchema";
 import Heading from "../../ui/Heading";
 
 interface CourseDataBoxProps {
-  course: z.infer<typeof courseDetailSchema>;
+  course: z.infer<typeof courseSimpleSchema>;
 }
 
 function CourseDataBox({ course }: CourseDataBoxProps) {
@@ -18,13 +18,15 @@ function CourseDataBox({ course }: CourseDataBoxProps) {
           <Heading as="h4">Про курс:</Heading>
           <p>{course.description}</p>
         </div>
-        {course.teacher?.id && (
+        {typeof course.teacher === "object" && course.teacher?.id ? (
           <div className="grid grid-cols-[10rem_1fr] items-baseline">
             <Heading as="h4">Викладач:</Heading>
             <p>
               {course.teacher.first_name} {course.teacher.last_name}
             </p>
           </div>
+        ) : (
+          <p>У курса ще немає викладача...</p>
         )}
         {/* {course.groups[0]?.id && (
           <div className="grid grid-cols-[10rem_1fr] items-baseline">

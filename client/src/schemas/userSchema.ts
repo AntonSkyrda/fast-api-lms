@@ -22,6 +22,8 @@ export const teacherSchema = userSchema.extend({
   is_teacher: z.literal(true),
 });
 
+export const teachersSchema = z.array(teacherSchema);
+
 export const superuserSchema = userSchema.extend({
   is_superuser: z.literal(true),
 });

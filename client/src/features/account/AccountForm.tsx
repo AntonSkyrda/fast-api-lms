@@ -12,7 +12,7 @@ import {
   FormMessage,
 } from "../../ui/Form";
 import { Input } from "../../ui/Input";
-import { Checkbox } from "../../ui/Checkbox";
+import { Checkbox } from "../../ui/checkbox";
 import { Button } from "../../ui/Button";
 import Spinner from "../../ui/Spinner";
 import { useUpdateUser } from "./useUpdateUser";
@@ -26,7 +26,7 @@ function AccountForm() {
     resolver: zodResolver(accountFormSchema),
     defaultValues: {
       email: user?.email,
-      password: "",
+      // password: "",
       first_name: user?.first_name,
       last_name: user?.last_name,
       father_name: user?.father_name,
@@ -67,7 +67,7 @@ function AccountForm() {
               </FormItem>
             )}
           />
-          <FormField
+          {/* <FormField
             name="password"
             render={({ field }) => (
               <FormItem>
@@ -84,7 +84,7 @@ function AccountForm() {
                 <FormMessage />
               </FormItem>
             )}
-          />
+          /> */}
 
           <FormField
             name="first_name"
@@ -109,7 +109,7 @@ function AccountForm() {
             name="last_name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel htmlFor="last_name">Фамілія</FormLabel>
+                <FormLabel htmlFor="last_name">Прізвище</FormLabel>
                 <FormControl>
                   <Input
                     type="text"
