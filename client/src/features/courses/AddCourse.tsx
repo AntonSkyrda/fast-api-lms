@@ -29,7 +29,7 @@ function AddCourse() {
             Створіть курс для своїх студентів
           </DialogDescription>
         </DialogHeader>
-        <CurseForm handleClose={setIsOpen} />
+        <CurseForm isOpen={isOpen} handleClose={setIsOpen} />
       </DialogContent>
     </Dialog>
   );

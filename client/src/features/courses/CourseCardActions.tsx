@@ -1,9 +1,8 @@
 import { Calendar } from "lucide-react";
 import { Button } from "../../ui/Button";
-import UpdateCourse from "./UpdateCourse";
 import { z } from "zod";
 import { courseSimpleSchema } from "../../schemas/coursesSchema";
-import DeleteCourse from "./DeleteCourse";
+import AdminCourseCardActions from "./AdminCourseCardActions";
 
 function CourseCardActions({
   course,
@@ -12,14 +11,13 @@ function CourseCardActions({
 }) {
   return (
     <div className="flex flex-col gap-5">
-      <UpdateCourse course={course} />
+      <AdminCourseCardActions course={course} />
       <Button variant="outline">
         <span>
           <Calendar />
         </span>
         Розклад
       </Button>
-      <DeleteCourse course={course} />
     </div>
   );
 }

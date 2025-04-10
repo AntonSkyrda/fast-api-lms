@@ -8,24 +8,29 @@ import {
   FormMessage,
 } from "../../ui/Form";
 import { z } from "zod";
-import {
-  courseDetailSchema,
-  courseSimpleSchema,
-} from "../../schemas/coursesSchema";
+import { courseSimpleSchema } from "../../schemas/coursesSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../../ui/Input";
 import { Button } from "../../ui/Button";
 import { useAddCourse } from "./useAddCourse";
 import Spinner from "../../ui/Spinner";
 import { useUpdateCourse } from "./useUpdateCourse";
+// import {
+//   Select,
+//   SelectContent,
+//   SelectItem,
+//   SelectTrigger,
+//   SelectValue,
+// } from "../../ui/select";
+import { useEffect } from "react";
+// import toast from "react-hot-toast";
 
 interface CourseFormProps {
+  isOpen: boolean;
   handleClose: (isOpen: boolean) => void;
-  courseToEdit?:
-    | z.infer<typeof courseSimpleSchema>
-    | z.infer<typeof courseDetailSchema>;
+  courseToEdit?: z.infer<typeof courseSimpleSchema>;
 }
-function CurseForm({ handleClose, courseToEdit }: CourseFormProps) {
+function CurseForm({ isOpen, handleClose, courseToEdit }: CourseFormProps) {
   const { id: editId, ...editValues } = courseToEdit ?? {};
 
   const isEditSession = Boolean(editId);
@@ -42,10 +47,28 @@ function CurseForm({ handleClose, courseToEdit }: CourseFormProps) {
       : {
           name: "",
           description: "",
+          teacher: null,
         },
   });
 
+  useEffect(
+    function () {
+      if (isOpen === false) return () => form.reset();
+    },
+    [isOpen, form],
+  );
+
+  useEffect(
+    function () {
+      if (form.formState.errors) console.log(form.formState.errors);
+    },
+    [handleClose, form.formState.errors],
+  );
+
   function onSubmit(data: FieldValues) {
+    // const courseUpload = { ...data, teacher: data.teacher * 1 };
+    // console.log(courseUpload);
+
     const { success, data: courseData } = courseSimpleSchema.safeParse(data);
     if (!success) return;
     if (isEditSession && typeof editId === "number")
