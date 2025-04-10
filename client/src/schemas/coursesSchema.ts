@@ -2,8 +2,30 @@ import { z } from "zod";
 import { teacherSchema } from "./userSchema";
 import { groupSchema } from "./groupSchema";
 
+// Course scheme from backend with get /courses
 export const courseSimpleSchema = z.object({
   id: z.number().int().optional(),
+  name: z.string(),
+  description: z.string(),
+  // teacher: teacherSchema,
+  teacher: z.union([teacherSchema, z.null()]),
+  groups: z.array(z.number()).optional(),
+});
+
+// Courses scheme from backend with get /courses
+export const coursesSchema = z.array(courseSimpleSchema);
+
+// Course scheme from backend wit get /courses/id
+export const courseDetailSchema = z.object({
+  id: z.number().int(),
+  name: z.string().max(255),
+  description: z.string(),
+  teacher: teacherSchema.optional(),
+  groups: z.array(groupSchema).optional(),
+});
+
+// Course scheme for form validation for update/create course
+export const courseSimpleFormSchema = z.object({
   name: z
     .string()
     .max(255, {
@@ -16,16 +38,4 @@ export const courseSimpleSchema = z.object({
       message: "Опис курсу не має перевищувати 255 символів",
     })
     .trim(),
-  teacher: z.number().int().optional(),
-  groups: z.array(z.number()).optional(),
-});
-
-export const coursesSchema = z.array(courseSimpleSchema);
-
-export const courseDetailSchema = z.object({
-  id: z.number().int().optional(),
-  name: z.string().max(255),
-  description: z.string(),
-  teacher: teacherSchema.optional(),
-  groups: z.array(groupSchema).optional(),
 });

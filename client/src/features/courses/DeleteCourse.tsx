@@ -13,18 +13,13 @@ import { Trash } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { buttonVariants } from "../../ui/Button";
 import { z } from "zod";
-import {
-  courseDetailSchema,
-  courseSimpleSchema,
-} from "../../schemas/coursesSchema";
+import { courseSimpleSchema } from "../../schemas/coursesSchema";
 import { useDeleteCourse } from "./useDeleteCourse";
 
 function DeleteCourse({
   course,
 }: {
-  course:
-    | z.infer<typeof courseSimpleSchema>
-    | z.infer<typeof courseDetailSchema>;
+  course: z.infer<typeof courseSimpleSchema>;
 }) {
   const { user } = useAuth();
   const { deleteCourse, isPending } = useDeleteCourse();
@@ -39,7 +34,7 @@ function DeleteCourse({
         <span>
           <Trash />
         </span>
-        Видалити
+        Видалити курс
       </AlertDialogTrigger>
 
       <AlertDialogContent>

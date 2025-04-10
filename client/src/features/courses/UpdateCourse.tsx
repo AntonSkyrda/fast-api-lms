@@ -9,25 +9,16 @@ import {
   DialogTrigger,
 } from "../../ui/Dialog";
 import CurseForm from "./CurseForm";
-import { useAuth } from "../../contexts/AuthContext";
 import { Pencil } from "lucide-react";
 import { z } from "zod";
-import {
-  courseDetailSchema,
-  courseSimpleSchema,
-} from "../../schemas/coursesSchema";
+import { courseSimpleSchema } from "../../schemas/coursesSchema";
 
 function UpdateCourse({
   course,
 }: {
-  course:
-    | z.infer<typeof courseSimpleSchema>
-    | z.infer<typeof courseDetailSchema>;
+  course: z.infer<typeof courseSimpleSchema>;
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const { user } = useAuth();
-
-  if (!user?.is_superuser) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -44,7 +35,11 @@ function UpdateCourse({
             Оновіть дані про курс.
           </DialogDescription>
         </DialogHeader>
-        <CurseForm handleClose={setIsOpen} courseToEdit={course} />
+        <CurseForm
+          isOpen={isOpen}
+          handleClose={setIsOpen}
+          courseToEdit={course}
+        />
       </DialogContent>
     </Dialog>
   );

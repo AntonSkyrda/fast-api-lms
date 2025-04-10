@@ -12,10 +12,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../../ui/Input";
 
 import { z } from "zod";
-import { Checkbox } from "../../ui/Checkbox";
+import { Checkbox } from "../../ui/checkbox";
 import { Button } from "../../ui/Button";
 import { useAddUser } from "./useAddUser";
 import Spinner from "../../ui/Spinner";
+import { useEffect } from "react";
 
 function AddUserForm({
   handleClose,
@@ -37,6 +38,13 @@ function AddUserForm({
       is_verified: false,
     },
   });
+
+  useEffect(
+    function () {
+      if (form.formState.errors) console.log(form.formState.errors);
+    },
+    [form.formState.errors],
+  );
 
   const { addUser, isPending: isLoading } = useAddUser();
 
@@ -114,7 +122,7 @@ function AddUserForm({
             name="last_name"
             render={({ field }) => (
               <FormItem>
-                <FormLabel htmlFor="last_name">Фамілія</FormLabel>
+                <FormLabel htmlFor="last_name">Прізвище</FormLabel>
                 <FormControl>
                   <Input
                     type="text"
@@ -180,7 +188,7 @@ function AddUserForm({
               </FormItem>
             )}
           />
-          <FormField
+          {/* <FormField
             name="is_superuser"
             render={({ field }) => (
               <FormItem className="flex flex-row items-center gap-2">
@@ -194,8 +202,8 @@ function AddUserForm({
                 <FormLabel htmlFor="is_superuser">Адміністратор</FormLabel>
               </FormItem>
             )}
-          />
-          <FormField
+          /> */}
+          {/* <FormField
             name="is_active"
             render={({ field }) => (
               <FormItem className="flex flex-row items-center gap-2">
@@ -209,7 +217,7 @@ function AddUserForm({
                 <FormLabel htmlFor="is_active">Активний</FormLabel>
               </FormItem>
             )}
-          />
+          /> */}
         </fieldset>
         <div className="row-span-2">
           <Button variant="default" type="submit">

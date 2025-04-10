@@ -9,26 +9,39 @@ import { NavLink } from "react-router-dom";
 import toast from "react-hot-toast";
 import DeleteCourse from "./DeleteCourse";
 import UpdateCourse from "./UpdateCourse";
+import AddTeacherToCourse from "./AddTeacherToCourse";
+import { useEffect } from "react";
+import RemoveTeacherFromCourse from "./RemoveTeacherFromCourse";
 
 function CourseDetail() {
   const { isLoading, course, courseError } = useCourse();
 
+  useEffect(
+    function () {
+      if (courseError) toast.error(courseError.message);
+    },
+    [courseError],
+  );
+
   if (isLoading) return <Spinner />;
-  if (courseError) toast.error(courseError.message);
   if (!course) return <Empty resourceName="Курс" />;
 
   return (
     <div className="flex flex-col gap-10 px-10 py-4">
-      <header className="grid grid-cols-[auto_1fr] grid-rows-2 gap-5">
+      <header className="flex flex-col gap-10">
         <Heading as="h2">Деталі курсу</Heading>
-        <NavLink
-          to="/courses"
-          className={
-            buttonVariants({ variant: "default" }) + " row-start-2 w-1/2"
-          }
-        >
-          &larr; Назад
-        </NavLink>
+        <div className="flex flex-row items-center justify-between">
+          <NavLink
+            to="/courses"
+            className={buttonVariants({ variant: "default" }) + ""}
+          >
+            &larr; Назад
+          </NavLink>
+          <div className="flex flex-row items-center gap-5">
+            <AddTeacherToCourse />
+            <RemoveTeacherFromCourse />
+          </div>
+        </div>
       </header>
       <CourseDataBox course={course} />
 
