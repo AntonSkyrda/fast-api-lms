@@ -1,7 +1,6 @@
 from pydantic import BaseModel, ConfigDict
-
-from .groups import GroupReadShallow
-from .user import UserReadShallow
+from core.schemas.user import UserRead
+from core.schemas.groups import GroupReadBase
 
 
 class CourseBase(BaseModel):
@@ -10,18 +9,29 @@ class CourseBase(BaseModel):
 
 
 class CourseCreate(CourseBase):
-    teacher_id: int | None = None
+    pass
 
 
 class CourseUpdate(BaseModel):
+    name: str
+    description: str
+
+
+class CourseUpdatePartial(BaseModel):
     name: str | None = None
     description: str | None = None
-    teacher_id: int | None = None
 
 
-class CourseRead(CourseBase):
+class CourseReadBase(CourseBase):
     id: int
-    teacher: UserReadShallow | None = None
-    groups: list[GroupReadShallow] | None = None
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class CourseReadPlain(CourseReadBase):
+    pass
+
+
+class CourseReadDetailed(CourseReadBase):
+    teacher: UserRead | None = None
+    groups: list[GroupReadBase]

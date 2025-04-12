@@ -1,36 +1,24 @@
+from fastapi import HTTPException
 from sqlalchemy import select, update, delete
-from sqlalchemy.engine import Result
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import Course, Group, User
-from core.schemas.courses import CourseCreate, CourseUpdate
+from core.schemas.courses import CourseCreate, CourseUpdate, CourseUpdatePartial
 
 
 async def get_course(session: AsyncSession, course_id: int) -> Course | None:
     result = await session.execute(
         select(Course)
-        .options(
-            selectinload(Course.groups),
-            selectinload(Course.teacher),
-        )
+        .options(selectinload(Course.teacher), selectinload(Course.groups))
         .where(Course.id == course_id)
     )
-    return result.scalars().first()
+    return result.scalar_one_or_none()
 
 
 async def get_courses(session: AsyncSession) -> list[Course]:
-    stmt = (
-        select(Course)
-        .options(
-            selectinload(Course.groups),
-            selectinload(Course.teacher),
-        )
-        .order_by(Course.id)
-    )
-    result = await session.execute(stmt)
-    courses = result.scalars().all()
-    return list(courses)
+    result = await session.execute(select(Course).order_by(Course.id))
+    return list(result.scalars().all())
 
 
 async def create_course(session: AsyncSession, course_in: CourseCreate) -> Course:
@@ -49,14 +37,29 @@ async def create_course(session: AsyncSession, course_in: CourseCreate) -> Cours
 
 
 async def update_course(
-    session: AsyncSession, course_id: int, course_in: CourseUpdate
+    session: AsyncSession,
+    course_id: int,
+    course_in: CourseUpdate | CourseUpdatePartial,
+    partial: bool = True,
 ) -> Course:
+    values = course_in.dict(exclude_unset=partial)
+    if not values:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "No fields provided for update"
+                if partial
+                else "PUT request must contain all fields"
+            ),
+        )
+
     stmt = (
         update(Course)
         .where(Course.id == course_id)
-        .values(**course_in.dict(exclude_unset=True))
+        .values(**values)
         .execution_options(synchronize_session="fetch")
     )
+
     await session.execute(stmt)
     await session.commit()
 
