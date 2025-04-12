@@ -6,7 +6,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../../ui/Form";
+} from "../../ui/form";
 import { userSchema } from "../../schemas/userSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../../ui/Input";
@@ -16,7 +16,7 @@ import { Checkbox } from "../../ui/checkbox";
 import { Button } from "../../ui/Button";
 import { useAddUser } from "./useAddUser";
 import Spinner from "../../ui/Spinner";
-import { useEffect } from "react";
+// import { useEffect } from "react";
 
 function AddUserForm({
   handleClose,
@@ -39,12 +39,12 @@ function AddUserForm({
     },
   });
 
-  useEffect(
-    function () {
-      if (form.formState.errors) console.log(form.formState.errors);
-    },
-    [form.formState.errors],
-  );
+  // useEffect(
+  //   function () {
+  //     if (form.formState.errors) console.log(form.formState.errors);
+  //   },
+  //   [form.formState.errors],
+  // );
 
   const { addUser, isPending: isLoading } = useAddUser();
 

@@ -5,7 +5,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../../ui/Form";
+} from "../../ui/form";
 import { Input } from "../../ui/Input";
 import { Button } from "../../ui/Button";
 

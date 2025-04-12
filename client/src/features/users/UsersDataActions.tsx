@@ -8,7 +8,6 @@ interface UsersDataActionsProps {
 }
 
 function UsersDataActions({ user }: UsersDataActionsProps) {
-  console.log(user);
   return (
     <Popover>
       <PopoverTrigger asChild className="cursor-pointer">

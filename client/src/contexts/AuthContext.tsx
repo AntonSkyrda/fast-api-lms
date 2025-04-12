@@ -1,4 +1,10 @@
-import { createContext, useCallback, useContext, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { z } from "zod";
 import { userSchema } from "../schemas/userSchema";
 import { removeToken, saveToken } from "../lib/utils/manageCookie";
@@ -7,8 +13,9 @@ import {
   logout as logoutApi,
 } from "../lib/services/apiAuth";
 import { getUserByToken } from "../lib/services/apiUser";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 
 type User = z.infer<typeof userSchema> | null;
 
@@ -27,6 +34,7 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const queryClient = useQueryClient();
   const [loginError, setLoginError] = useState("");
 
@@ -38,9 +46,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   } = useQuery<User>({
     queryKey: ["user"],
     queryFn: getUserByToken,
+    enabled: pathname !== "/login",
     staleTime: 0,
     retry: false,
   });
+
+  useEffect(
+    function () {
+      if (getUserError) {
+        navigate("/login");
+        toast.error(getUserError.message);
+      }
+    },
+    [getUserError, navigate],
+  );
 
   const login = useCallback(
     async (email: string, password: string) => {
