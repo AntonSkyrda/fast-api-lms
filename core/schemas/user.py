@@ -1,10 +1,10 @@
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 from fastapi_users import schemas
 from pydantic import BaseModel, ConfigDict
 from core.types.user_id import UserIdType
 
 if TYPE_CHECKING:
-    from .groups import GroupReadShallow
+    from .groups import GroupReadDetailed
 
 
 class UserBase(BaseModel):
@@ -32,12 +32,12 @@ class UserReadShallow(UserBase, schemas.BaseUser[UserIdType]):
 
 
 class UserReadRelated(UserRead):
-    group: "GroupReadShallow | None" = None
-    courses: list["CourseRead | None "] = None
+    group: "GroupReadDetailed | None" = None
+    courses: list["CourseReadDetailed | None "] = None
 
 
-from .groups import GroupReadShallow
-from .courses import CourseRead
+from .groups import GroupReadDetailed
+from .courses import CourseReadDetailed
 
 UserRead.model_rebuild()
 UserReadShallow.model_rebuild()

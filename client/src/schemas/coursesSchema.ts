@@ -9,7 +9,7 @@ export const courseSimpleSchema = z.object({
   description: z.string(),
   // teacher: teacherSchema,
   teacher: z.union([teacherSchema, z.null()]),
-  groups: z.union([z.array(groupSchema), z.array(z.number())]).optional(),
+  groups: z.any(),
 });
 
 // Courses scheme from backend with get /courses

@@ -2,7 +2,13 @@ from fastapi import APIRouter, HTTPException, status, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import db_helper
-from core.schemas.courses import CourseRead, CourseCreate, CourseUpdate
+from core.schemas.courses import (
+    CourseCreate,
+    CourseUpdate,
+    CourseUpdatePartial,
+    CourseReadPlain,
+    CourseReadDetailed,
+)
 from core.crud import courses as crud
 from core.crud.groups import get_group
 
@@ -10,27 +16,26 @@ from core.crud.groups import get_group
 router = APIRouter(prefix="/courses", tags=["Courses"])
 
 
-@router.get("/", response_model=list[CourseRead])
+@router.get("/", response_model=list[CourseReadPlain])
 async def get_courses(session: AsyncSession = Depends(db_helper.session_getter)):
     return await crud.get_courses(session=session)
 
 
-@router.get("/{course_id}/", response_model=CourseRead)
+@router.get("/{course_id}/", response_model=CourseReadDetailed)
 async def get_course(
     course_id: int,
     session: AsyncSession = Depends(db_helper.session_getter),
 ):
-    group = await crud.get_course(session=session, course_id=course_id)
-    if group is not None:
-        return group
-
+    course = await crud.get_course(session=session, course_id=course_id)
+    if course is not None:
+        return course
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
-        detail=f"Group with id {course_id} not found",
+        detail=f"Course with id {course_id} not found",
     )
 
 
-@router.post("/", response_model=CourseRead)
+@router.post("/", response_model=CourseReadPlain)
 async def create_course(
     course_in: CourseCreate,
     session: AsyncSession = Depends(db_helper.session_getter),
@@ -38,43 +43,49 @@ async def create_course(
     return await crud.create_course(course_in=course_in, session=session)
 
 
-@router.put("/{course_id}/", response_model=CourseRead)
+@router.put("/{course_id}/", response_model=CourseReadDetailed)
 async def update_course_put(
     course_id: int,
     course_in: CourseUpdate,
     session: AsyncSession = Depends(db_helper.session_getter),
 ):
-    existing_course = await crud.get_course(session=session, course_id=course_id)
-    if existing_course is None:
+    course = await crud.get_course(session=session, course_id=course_id)
+    if not course:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Course with id {course_id} not found",
         )
-    updated_course = await crud.update_course(
-        session=session, course_id=course_id, course_in=course_in
+
+    return await crud.update_course(
+        session=session,
+        course_id=course_id,
+        course_in=course_in,
+        partial=False,
     )
-    return updated_course
 
 
-@router.patch("/{course_id}/", response_model=CourseRead)
+@router.patch("/{course_id}/", response_model=CourseUpdatePartial)
 async def update_course_patch(
     course_id: int,
-    course_in: CourseUpdate,
+    course_in: CourseUpdatePartial,
     session: AsyncSession = Depends(db_helper.session_getter),
 ):
-    existing_course = await crud.get_course(session=session, course_id=course_id)
-    if existing_course is None:
+    course = await crud.get_course(session=session, course_id=course_id)
+    if not course:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Course with id {course_id} not found",
         )
-    updated_course = await crud.update_course(
-        session=session, course_id=course_id, course_in=course_in
+
+    return await crud.update_course(
+        session,
+        course_id,
+        course_in,
+        partial=True,
     )
-    return updated_course
 
 
-@router.delete("/{course_id}/", response_model=CourseRead)
+@router.delete("/{course_id}/", response_model=CourseReadPlain)
 async def delete_course(
     course_id: int,
     session: AsyncSession = Depends(db_helper.session_getter),
@@ -89,7 +100,7 @@ async def delete_course(
     return deleted_course
 
 
-@router.post("/{course_id}/groups/{group_id}/", response_model=CourseRead)
+@router.post("/{course_id}/groups/{group_id}/", response_model=CourseReadDetailed)
 async def add_group_to_course_endpoint(
     course_id: int,
     group_id: int,
@@ -115,7 +126,7 @@ async def add_group_to_course_endpoint(
     return updated_course
 
 
-@router.post("/{course_id}/add-teacher/{teacher_id}", response_model=CourseRead)
+@router.post("/{course_id}/add-teacher/{teacher_id}", response_model=CourseReadDetailed)
 async def assign_teacher_to_course(
     course_id: int,
     teacher_id: int,
@@ -132,7 +143,7 @@ async def assign_teacher_to_course(
     return course
 
 
-@router.delete("/{course_id}/teacher", response_model=CourseRead)
+@router.delete("/{course_id}/teacher", response_model=CourseReadDetailed)
 async def delete_course_teacher(
     course_id: int,
     session: AsyncSession = Depends(db_helper.session_getter),

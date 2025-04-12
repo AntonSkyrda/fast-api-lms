@@ -1,36 +1,24 @@
+from fastapi import HTTPException
 from sqlalchemy import select, update, delete
-from sqlalchemy.engine import Result
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from core.models import Group, User, Course
-from core.schemas.groups import GroupCreate, GroupUpdate
+from core.models import Group, User
+from core.schemas.groups import GroupCreate, GroupUpdate, GroupUpdatePartial
 
 
 async def get_group(session: AsyncSession, group_id: int) -> Group | None:
     result = await session.execute(
         select(Group)
-        .options(
-            selectinload(Group.courses).selectinload(Course.groups),
-            selectinload(Group.students),
-        )
+        .options(selectinload(Group.students), selectinload(Group.courses))
         .where(Group.id == group_id)
     )
-    return result.scalars().first()
+    return result.scalar_one()
 
 
 async def get_groups(session: AsyncSession) -> list[Group]:
-    stmt = (
-        select(Group)
-        .order_by(Group.id)
-        .options(
-            selectinload(Group.courses).selectinload(Course.groups),
-            selectinload(Group.students),
-        )
-    )
-    result: Result = await session.execute(stmt)
-    groups = result.scalars().all()
-    return list(groups)
+    result = await session.execute(select(Group).order_by(Group.id))
+    return list(result.scalars().all())
 
 
 async def create_group(session: AsyncSession, group_in: GroupCreate) -> Group:
@@ -52,17 +40,32 @@ async def create_group(session: AsyncSession, group_in: GroupCreate) -> Group:
 
 
 async def update_group(
-    session: AsyncSession, group_id: int, group_in: GroupUpdate
+    session: AsyncSession,
+    group_id: int,
+    group_in: GroupUpdate | GroupUpdatePartial,
+    partial: bool = True,
 ) -> Group:
+
+    values = group_in.dict(exclude_unset=partial)
+    if not values:
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "No fields provided for update"
+                if partial
+                else "PUT request must contain all fields"
+            ),
+        )
 
     stmt = (
         update(Group)
         .where(Group.id == group_id)
-        .values(**group_in.dict(exclude_unset=True))
+        .values(**values)
         .execution_options(synchronize_session="fetch")
     )
     await session.execute(stmt)
     await session.commit()
+
     result = await session.execute(select(Group).where(Group.id == group_id))
     return result.scalar_one()
 
