@@ -169,5 +169,7 @@ export async function removeTeacherFromCourse(courseId: number) {
   );
   if (!success) throw new Error(`There is Error with loading Course data`);
 
+  console.log(course);
+
   return course;
 }

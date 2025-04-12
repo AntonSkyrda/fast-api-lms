@@ -46,7 +46,7 @@ export async function getStudents() {
     })
     .catch((error) => {
       console.log(error);
-      throw new Error("Сталася помилка при отримані даних викладачів.");
+      throw new Error("Сталася помилка при отримані даних студентів.");
     });
 
   const { success, data: students } = await studentsSchema.safeParseAsync(

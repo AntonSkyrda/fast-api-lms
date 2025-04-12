@@ -15,15 +15,7 @@ import { Button } from "../../ui/Button";
 import { useAddCourse } from "./useAddCourse";
 import Spinner from "../../ui/Spinner";
 import { useUpdateCourse } from "./useUpdateCourse";
-// import {
-//   Select,
-//   SelectContent,
-//   SelectItem,
-//   SelectTrigger,
-//   SelectValue,
-// } from "../../ui/select";
 import { useEffect } from "react";
-// import toast from "react-hot-toast";
 
 interface CourseFormProps {
   isOpen: boolean;
@@ -58,17 +50,14 @@ function CurseForm({ isOpen, handleClose, courseToEdit }: CourseFormProps) {
     [isOpen, form],
   );
 
-  useEffect(
-    function () {
-      if (form.formState.errors) console.log(form.formState.errors);
-    },
-    [handleClose, form.formState.errors],
-  );
+  // useEffect(
+  //   function () {
+  //     if (form.formState.errors) console.log(form.formState.errors);
+  //   },
+  //   [handleClose, form.formState.errors],
+  // );
 
   function onSubmit(data: FieldValues) {
-    // const courseUpload = { ...data, teacher: data.teacher * 1 };
-    // console.log(courseUpload);
-
     const { success, data: courseData } = courseSimpleSchema.safeParse(data);
     if (!success) return;
     if (isEditSession && typeof editId === "number")

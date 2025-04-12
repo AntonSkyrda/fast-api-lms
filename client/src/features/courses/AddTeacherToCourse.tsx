@@ -31,7 +31,7 @@ import {
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../../ui/select";
+} from "../../ui/Select";
 import toast from "react-hot-toast";
 import { Plus } from "lucide-react";
 
@@ -63,7 +63,7 @@ function AddTeacherToCourse() {
       toast.error("Неможливо отримати дані про курс");
       return setIsOpen(false);
     }
-    addTeacherToCourse({ courseId: course.id, teacherId: data.teacherId });
+    addTeacherToCourse(data.teacherId);
     setIsOpen(false);
   }
 

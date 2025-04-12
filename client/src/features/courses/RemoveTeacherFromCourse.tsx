@@ -61,7 +61,7 @@ function RemoveTeacherFromCourse() {
           <AlertDialogAction
             className={buttonVariants({ variant: "destructive" })}
             disabled={isPending}
-            onClick={() => removeTeacherFromCourse(course.id!)}
+            onClick={() => removeTeacherFromCourse()}
           >
             Видалити
           </AlertDialogAction>

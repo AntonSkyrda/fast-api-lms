@@ -33,7 +33,8 @@ export function useAddUser() {
       toast.success(
         `${whoIsUser(user.is_student, user.is_teacher, user.is_superuser)} ${user.first_name} успішно створено`,
       );
-      queryClient.refetchQueries({ queryKey: ["users"] });
+      queryClient.refetchQueries({ queryKey: ["students"] });
+      queryClient.refetchQueries({ queryKey: ["teachers"] });
     },
     onError: () => {
       toast.error("Сталася помилка при створенні користувача.");
