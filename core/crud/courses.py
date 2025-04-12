@@ -10,15 +10,25 @@ from core.schemas.courses import CourseCreate, CourseUpdate
 async def get_course(session: AsyncSession, course_id: int) -> Course | None:
     result = await session.execute(
         select(Course)
-        .options(selectinload(Course.groups))
+        .options(
+            selectinload(Course.groups),
+            selectinload(Course.teacher),
+        )
         .where(Course.id == course_id)
     )
     return result.scalars().first()
 
 
 async def get_courses(session: AsyncSession) -> list[Course]:
-    stmt = select(Course).order_by(Course.id).options(selectinload(Course.groups))
-    result: Result = await session.execute(stmt)
+    stmt = (
+        select(Course)
+        .options(
+            selectinload(Course.groups),
+            selectinload(Course.teacher),
+        )
+        .order_by(Course.id)
+    )
+    result = await session.execute(stmt)
     courses = result.scalars().all()
     return list(courses)
 
