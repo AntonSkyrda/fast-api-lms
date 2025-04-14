@@ -2,6 +2,7 @@ import axios from "axios";
 
 import {
   courseDetailedSchema,
+  coursePlainPartialSchema,
   coursesSchema,
 } from "../../schemas/coursesSchema";
 import { getToken } from "../utils/manageCookie";
@@ -102,9 +103,8 @@ export async function updateCourse(
 
   // console.log(res.data);
 
-  const { success, data: course } = await coursePlainSchema.safeParseAsync(
-    res.data,
-  );
+  const { success, data: course } =
+    await coursePlainPartialSchema.safeParseAsync(res.data);
   if (!success) throw new Error(`There is Error with loading Course data`);
 
   return course;

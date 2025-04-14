@@ -2,6 +2,8 @@ import { z } from "zod";
 import { teacherSchema } from "./usersSchema";
 import { coursePlainSchema, groupPlainSchema } from "./plainShemas";
 
+export const coursePlainPartialSchema = coursePlainSchema.partial();
+
 // Courses scheme from backend with get /courses
 export const coursesSchema = z.array(coursePlainSchema);
 

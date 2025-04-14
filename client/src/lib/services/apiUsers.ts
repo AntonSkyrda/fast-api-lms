@@ -73,6 +73,8 @@ export async function updateUser(data: z.infer<typeof userUpdateFormSchema>) {
       throw new Error("Сталася помилка при Оновленні даних.");
     });
 
+  console.log(res.data);
+
   const { success, data: user } = await userSchema.safeParseAsync(res.data);
   if (!success)
     throw new Error(
