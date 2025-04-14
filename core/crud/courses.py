@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from sqlalchemy import select, update, delete
+from sqlalchemy import select, update, delete, func
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -16,9 +16,14 @@ async def get_course(session: AsyncSession, course_id: int) -> Course | None:
     return result.scalar_one_or_none()
 
 
-async def get_courses(session: AsyncSession) -> list[Course]:
-    result = await session.execute(select(Course).order_by(Course.id))
-    return list(result.scalars().all())
+async def get_courses(
+    session: AsyncSession, limit: int = 10, offset: int = 0
+) -> tuple[int, list[Course]]:
+    total = await session.scalar(select(func.count()).select_from(Course)) or 0
+    result = await session.execute(
+        select(Course).order_by(Course.id).offset(offset).limit(limit)
+    )
+    return total, list(result.scalars().all())
 
 
 async def create_course(session: AsyncSession, course_in: CourseCreate) -> Course:
