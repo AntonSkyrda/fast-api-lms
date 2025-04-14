@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, status, Depends, Query
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -9,15 +9,22 @@ from core.schemas.groups import (
     GroupUpdate,
     GroupReadDetailed,
 )
+from core.schemas.pagination import PaginationResponse
 from core.crud import groups as crud
 
 
 router = APIRouter(prefix="/groups", tags=["Groups"])
 
 
-@router.get("/", response_model=list[GroupReadPlain])
-async def get_groups(session: AsyncSession = Depends(db_helper.session_getter)):
-    return await crud.get_groups(session=session)
+@router.get("/", response_model=PaginationResponse[GroupReadPlain])
+async def get_groups(
+    limit: int = Query(10, ge=1),
+    offset: int = Query(0, ge=0),
+    session: AsyncSession = Depends(db_helper.session_getter),
+):
+    total, groups = await crud.get_groups(session, limit=limit, offset=offset)
+
+    return PaginationResponse(total=total, items=groups)
 
 
 @router.get("/{group_id}/", response_model=GroupReadDetailed)
