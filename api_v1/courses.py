@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, status, Depends, Query
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import db_helper
@@ -9,6 +9,7 @@ from core.schemas.courses import (
     CourseReadPlain,
     CourseReadDetailed,
 )
+from core.schemas.pagination import PaginationResponse
 from core.crud import courses as crud
 from core.crud.groups import get_group
 
@@ -16,9 +17,15 @@ from core.crud.groups import get_group
 router = APIRouter(prefix="/courses", tags=["Courses"])
 
 
-@router.get("/", response_model=list[CourseReadPlain])
-async def get_courses(session: AsyncSession = Depends(db_helper.session_getter)):
-    return await crud.get_courses(session=session)
+@router.get("/", response_model=PaginationResponse[CourseReadPlain])
+async def get_courses(
+    limit: int = Query(10, ge=1),
+    offset: int = Query(0, ge=0),
+    session: AsyncSession = Depends(db_helper.session_getter),
+):
+    total, courses = await crud.get_courses(session, limit=limit, offset=offset)
+
+    return PaginationResponse(total=total, items=courses)
 
 
 @router.get("/{course_id}/", response_model=CourseReadDetailed)
