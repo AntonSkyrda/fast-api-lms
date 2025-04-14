@@ -1,5 +1,5 @@
 from fastapi import HTTPException
-from sqlalchemy import select, update, delete
+from sqlalchemy import select, update, delete, func
 from sqlalchemy.orm import selectinload
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -16,9 +16,16 @@ async def get_group(session: AsyncSession, group_id: int) -> Group | None:
     return result.scalar_one()
 
 
-async def get_groups(session: AsyncSession) -> list[Group]:
-    result = await session.execute(select(Group).order_by(Group.id))
-    return list(result.scalars().all())
+async def get_groups(
+    session: AsyncSession,
+    limit: int = 10,
+    offset: int = 0,
+) -> tuple[int, list[Group]]:
+    total = await session.scalar(select(func.count()).select_from(Group)) or 0
+    result = await session.execute(
+        select(Group).order_by(Group.id).offset(offset).limit(limit)
+    )
+    return total, list(result.scalars().all())
 
 
 async def create_group(session: AsyncSession, group_in: GroupCreate) -> Group:
