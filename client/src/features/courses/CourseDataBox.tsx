@@ -1,9 +1,9 @@
 import { z } from "zod";
-import { courseSimpleSchema } from "../../schemas/coursesSchema";
 import Heading from "../../ui/Heading";
+import { courseDetailedSchema } from "../../schemas/coursesSchema";
 
 interface CourseDataBoxProps {
-  course: z.infer<typeof courseSimpleSchema>;
+  course: z.infer<typeof courseDetailedSchema>;
 }
 
 function CourseDataBox({ course }: CourseDataBoxProps) {

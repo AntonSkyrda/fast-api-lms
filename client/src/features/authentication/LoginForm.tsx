@@ -11,7 +11,7 @@ import { Button } from "../../ui/Button";
 
 import { FieldValues, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginFormSchema } from "../../schemas/loginFormSchema";
+import { loginFormSchema } from "../../schemas/formsSchemas";
 import { z } from "zod";
 import { useAuth } from "../../contexts/AuthContext";
 

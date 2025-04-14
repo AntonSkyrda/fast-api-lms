@@ -1,13 +1,13 @@
 import { z } from "zod";
 import { useAuth } from "../../contexts/AuthContext";
 import UpdateCourse from "./UpdateCourse";
-import { courseSimpleSchema } from "../../schemas/coursesSchema";
 import DeleteCourse from "./DeleteCourse";
+import { coursePlainSchema } from "../../schemas/plainShemas";
 
 function AdminCourseCardActions({
   course,
 }: {
-  course: z.infer<typeof courseSimpleSchema>;
+  course: z.infer<typeof coursePlainSchema>;
 }) {
   const { user } = useAuth();
   if (!user?.is_superuser) return null;

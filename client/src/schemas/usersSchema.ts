@@ -1,36 +1,31 @@
 import { z } from "zod";
+import { userSchema } from "./plainShemas";
 
-export const userSchema = z.object({
-  id: z.number().int().optional(),
-  password: z.string().optional(),
-  email: z.string().email({ message: "Некоректний Email" }),
-  is_active: z.boolean(),
-  is_superuser: z.boolean(),
-  is_verified: z.boolean(),
-  first_name: z.string(),
-  last_name: z.string(),
-  father_name: z.string(),
-  is_teacher: z.boolean(),
-  is_student: z.boolean(),
-});
-
+// User scheme with student permisions
 export const studentSchema = userSchema.extend({
   is_student: z.literal(true),
 });
 
+// Array of students scheme
 export const studentsSchema = z.array(studentSchema);
 
+// User scheme with teacher permisions
 export const teacherSchema = userSchema.extend({
   is_teacher: z.literal(true),
 });
 
+// Array of teacher scheme
 export const teachersSchema = z.array(teacherSchema);
 
+// User scheme with superuser permisions
 export const superuserSchema = userSchema.extend({
   is_superuser: z.literal(true),
 });
 
-// Схема для студента-викладача (якщо потрібно)
+// Array of superusers scheme
+export const superusersSchema = z.array(superuserSchema);
+
+// for dev purpouse only
 export const studentTeacherSchema = userSchema.extend({
   is_student: z.literal(true),
   is_teacher: z.literal(true),

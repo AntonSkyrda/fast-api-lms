@@ -13,13 +13,14 @@ import { Trash } from "lucide-react";
 import { useAuth } from "../../contexts/AuthContext";
 import { buttonVariants } from "../../ui/Button";
 import { z } from "zod";
-import { courseSimpleSchema } from "../../schemas/coursesSchema";
+
 import { useDeleteCourse } from "./useDeleteCourse";
+import { coursePlainSchema } from "../../schemas/plainShemas";
 
 function DeleteCourse({
   course,
 }: {
-  course: z.infer<typeof courseSimpleSchema>;
+  course: z.infer<typeof coursePlainSchema>;
 }) {
   const { user } = useAuth();
   const { deleteCourse, isPending } = useDeleteCourse();

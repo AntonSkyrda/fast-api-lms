@@ -6,13 +6,13 @@ import {
   useState,
 } from "react";
 import { z } from "zod";
-import { userSchema } from "../schemas/userSchema";
+import { userSchema } from "../schemas/usersSchema";
 import { removeToken, saveToken } from "../lib/utils/manageCookie";
 import {
   login as loginApi,
   logout as logoutApi,
 } from "../lib/services/apiAuth";
-import { getUserByToken } from "../lib/services/apiUser";
+import { getUserByToken } from "../lib/services/apiUsers";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
@@ -30,7 +30,7 @@ interface AuthContextType {
   refetchUser: () => void;
 }
 
-const AuthContext = createContext<AuthContextType | null>(null);
+export const AuthContext = createContext<AuthContextType | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
@@ -54,8 +54,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(
     function () {
       if (getUserError) {
-        navigate("/login");
         toast.error(getUserError.message);
+        removeToken();
+        navigate("/login");
       }
     },
     [getUserError, navigate],
