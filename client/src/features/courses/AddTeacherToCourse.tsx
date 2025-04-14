@@ -19,10 +19,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../../ui/Form";
+} from "../../ui/form";
 import { FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
-import { addTeacherToCourseFormSchema } from "../../schemas/formSchemas";
+import { addTeacherToCourseFormSchema } from "../../schemas/formsSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useCourse } from "./useCourse";
 import {

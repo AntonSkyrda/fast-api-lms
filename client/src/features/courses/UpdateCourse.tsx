@@ -7,16 +7,16 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../../ui/Dialog";
+} from "../../ui/dialog";
 import CurseForm from "./CurseForm";
 import { Pencil } from "lucide-react";
 import { z } from "zod";
-import { courseSimpleSchema } from "../../schemas/coursesSchema";
+import { coursePlainSchema } from "../../schemas/coursesSchema";
 
 function UpdateCourse({
   course,
 }: {
-  course: z.infer<typeof courseSimpleSchema>;
+  course: z.infer<typeof coursePlainSchema>;
 }) {
   const [isOpen, setIsOpen] = useState(false);
 

@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
-import { accountFormSchema } from "../../schemas/accountFormSchema";
+import { userUpdateFormSchema } from "../../schemas/formsSchemas";
 import { useAuth } from "../../contexts/AuthContext";
 import {
   Form,
@@ -10,7 +10,7 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../../ui/Form";
+} from "../../ui/form";
 import { Input } from "../../ui/Input";
 import { Checkbox } from "../../ui/checkbox";
 import { Button } from "../../ui/Button";
@@ -22,8 +22,8 @@ function AccountForm() {
   const { updateUser, isPending } = useUpdateUser();
   const isLoading = isLoadingUserData || isPending;
 
-  const form = useForm<z.infer<typeof accountFormSchema>>({
-    resolver: zodResolver(accountFormSchema),
+  const form = useForm<z.infer<typeof userUpdateFormSchema>>({
+    resolver: zodResolver(userUpdateFormSchema),
     defaultValues: {
       email: user?.email,
       // password: "",
@@ -36,9 +36,9 @@ function AccountForm() {
   });
 
   function onSubmit(data: FieldValues) {
-    const { success, data: fields } = accountFormSchema.safeParse(data);
+    const { success, data: fields } = userUpdateFormSchema.safeParse(data);
     if (!success) return;
-    console.log(fields);
+    // console.log(fields);
     updateUser(fields);
   }
 

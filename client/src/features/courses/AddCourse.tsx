@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../../ui/Dialog";
+} from "../../ui/dialog";
 import CurseForm from "./CurseForm";
 import { useAuth } from "../../contexts/AuthContext";
 

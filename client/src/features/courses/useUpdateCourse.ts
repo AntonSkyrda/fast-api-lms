@@ -2,10 +2,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { updateCourse as updateCourseApi } from "../../lib/services/apiCourses";
 import toast from "react-hot-toast";
-import { courseSimpleSchema } from "../../schemas/coursesSchema";
+import { courseAddAndUpdateFormSchema } from "../../schemas/formsSchemas";
 import { useParams } from "react-router-dom";
 
-type UpdateData = z.infer<typeof courseSimpleSchema>;
+type UpdateData = z.infer<typeof courseAddAndUpdateFormSchema>;
 export function useUpdateCourse() {
   const queryClient = useQueryClient();
   const { courseId } = useParams();

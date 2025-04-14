@@ -1,8 +1,6 @@
 import axios from "axios";
 import { authSchema } from "../../schemas/authSchema";
 import { getToken } from "../utils/manageCookie";
-import { z } from "zod";
-import { userSchema } from "../../schemas/userSchema";
 
 export async function login({
   email,
@@ -57,21 +55,4 @@ export async function logout() {
     .catch(() => {
       throw new Error("Сталася помилка при Log out.");
     });
-}
-
-export async function addUser(data: z.infer<typeof userSchema>) {
-  const token = getToken();
-  if (!token) throw new Error("Ви не авторизовані!");
-
-  const res = await axios.post(
-    `${import.meta.env.VITE_BASE_URL}/api/v1/auth/register`,
-    data,
-  );
-
-  const { success, data: user } = await userSchema.safeParseAsync(res.data);
-  if (!success)
-    throw new Error(
-      " There is an error with authentication service. Please contact administrator.",
-    );
-  return user;
 }

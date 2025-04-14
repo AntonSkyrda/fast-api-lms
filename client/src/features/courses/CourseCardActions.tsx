@@ -1,13 +1,13 @@
 import { Calendar } from "lucide-react";
 import { Button } from "../../ui/Button";
 import { z } from "zod";
-import { courseSimpleSchema } from "../../schemas/coursesSchema";
 import AdminCourseCardActions from "./AdminCourseCardActions";
+import { coursePlainSchema } from "../../schemas/plainShemas";
 
 function CourseCardActions({
   course,
 }: {
-  course: z.infer<typeof courseSimpleSchema>;
+  course: z.infer<typeof coursePlainSchema>;
 }) {
   return (
     <div className="flex flex-col gap-5">
