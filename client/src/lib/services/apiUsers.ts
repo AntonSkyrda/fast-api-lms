@@ -7,6 +7,7 @@ import {
   userAddFormSchema,
   userUpdateFormSchema,
 } from "../../schemas/formsSchemas";
+import { ITEMS_PER_PAGE } from "../consts";
 
 export async function getUserByToken() {
   const token = getToken();
@@ -155,25 +156,27 @@ export async function deleteUserById(userId: number) {
     });
 }
 
-export async function getTeachers() {
+export async function getTeachers(offset: number = 0) {
   const token = getToken();
   if (!token) throw new Error("Ви не авторизовані!");
 
   const res = await axios
-    .get(`${import.meta.env.VITE_BASE_URL}/api/v1/teachers/`, {
-      headers: {
-        accept: "application/json",
-        Authorization: `${token?.token_type} ${token?.access_token}`,
-        "Content-Type": "application/json",
+    .get(
+      `${import.meta.env.VITE_BASE_URL}/api/v1/teachers?limit=${ITEMS_PER_PAGE}&offset=${offset * ITEMS_PER_PAGE}`,
+      {
+        headers: {
+          accept: "application/json",
+          Authorization: `${token?.token_type} ${token?.access_token}`,
+          "Content-Type": "application/json",
+        },
       },
-      withCredentials: true,
-    })
+    )
     .catch((error) => {
       console.log(error);
       throw new Error("Сталася помилка при отримані даних викладачів.");
     });
 
-  const { success, data: teachers } = await teachersSchema.safeParseAsync(
+  const { success, data: teachersData } = await teachersSchema.safeParseAsync(
     res.data,
   );
   if (!success)
@@ -181,28 +184,30 @@ export async function getTeachers() {
       " There is an error with authentication service. Please contact administrator.",
     );
 
-  return teachers;
+  return teachersData;
 }
 
-export async function getStudents() {
+export async function getStudents(offset: number = 0) {
   const token = getToken();
   if (!token) throw new Error("Ви не авторизовані!");
 
   const res = await axios
-    .get(`${import.meta.env.VITE_BASE_URL}/api/v1/students/`, {
-      headers: {
-        accept: "application/json",
-        Authorization: `${token?.token_type} ${token?.access_token}`,
-        "Content-Type": "application/json",
+    .get(
+      `${import.meta.env.VITE_BASE_URL}/api/v1/students?limit=${ITEMS_PER_PAGE}&offset=${offset * ITEMS_PER_PAGE}`,
+      {
+        headers: {
+          accept: "application/json",
+          Authorization: `${token?.token_type} ${token?.access_token}`,
+          "Content-Type": "application/json",
+        },
       },
-      withCredentials: true,
-    })
+    )
     .catch((error) => {
       console.log(error);
       throw new Error("Сталася помилка при отримані даних студентів.");
     });
 
-  const { success, data: students } = await studentsSchema.safeParseAsync(
+  const { success, data: studentsData } = await studentsSchema.safeParseAsync(
     res.data,
   );
   if (!success)
@@ -210,5 +215,5 @@ export async function getStudents() {
       " There is an error with authentication service. Please contact administrator.",
     );
 
-  return students;
+  return studentsData;
 }

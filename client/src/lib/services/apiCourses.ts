@@ -9,28 +9,32 @@ import { getToken } from "../utils/manageCookie";
 import { z } from "zod";
 import { courseAddAndUpdateFormSchema } from "../../schemas/formsSchemas";
 import { coursePlainSchema } from "../../schemas/plainShemas";
+import { ITEMS_PER_PAGE } from "../consts";
 
-export async function getCourses() {
+export async function getCourses(offset: number = 0) {
+  console.log("page:", offset, "offset:", offset * ITEMS_PER_PAGE);
   const token = getToken();
   if (!token) throw new Error("Ви не авторизовані!");
 
   const res = await axios
-    .get(`${import.meta.env.VITE_BASE_URL}/api/v1/courses`, {
-      headers: {
-        accept: "application/json",
-        Authorization: `${token?.token_type} ${token?.access_token}`,
+    .get(
+      `${import.meta.env.VITE_BASE_URL}/api/v1/courses?limit=${ITEMS_PER_PAGE}&offset=${offset * ITEMS_PER_PAGE}`,
+      {
+        headers: {
+          accept: "application/json",
+          Authorization: `${token?.token_type} ${token?.access_token}`,
+        },
       },
-      withCredentials: true,
-    })
+    )
     .catch(() => {
       throw new Error("Сталася помилка при отриманні курсів.");
     });
 
-  const { success, data: courses } = await coursesSchema.safeParseAsync(
+  const { success, data: coursesData } = await coursesSchema.safeParseAsync(
     res.data,
   );
   if (!success) throw new Error("There is Error with loading Courses data");
-  return courses;
+  return coursesData;
 }
 
 export async function getCourseById(id: string) {
@@ -43,7 +47,6 @@ export async function getCourseById(id: string) {
         accept: "application/json",
         Authorization: `${token?.token_type} ${token?.access_token}`,
       },
-      withCredentials: true,
     })
     .catch(() => {
       throw new Error("Такого курсу не існує!");
@@ -68,7 +71,6 @@ export async function addCourse(
         accept: "application/json",
         Authorization: `${token?.token_type} ${token?.access_token}`,
       },
-      withCredentials: true,
     })
     .catch(() => {
       throw new Error("Не вдалось додати новий курс!");
@@ -95,7 +97,6 @@ export async function updateCourse(
         accept: "application/json",
         Authorization: `${token?.token_type} ${token?.access_token}`,
       },
-      withCredentials: true,
     })
     .catch(() => {
       throw new Error("Не вдалось оновити цей курс!");
@@ -120,7 +121,6 @@ export async function deleteCourse(id: number) {
         accept: "application/json",
         Authorization: `${token?.token_type} ${token?.access_token}`,
       },
-      withCredentials: true,
     })
     .catch(() => {
       throw new Error("Не вдалось видалити цей курс!");
@@ -139,7 +139,6 @@ export async function addTeacherToCourse(courseId: number, teacherId: number) {
           accept: "application/json",
           Authorization: `${token?.token_type} ${token?.access_token}`,
         },
-        withCredentials: true,
       },
     )
     .catch(() => {
@@ -166,7 +165,6 @@ export async function removeTeacherFromCourse(courseId: number) {
           accept: "application/json",
           Authorization: `${token?.token_type} ${token?.access_token}`,
         },
-        withCredentials: true,
       },
     )
     .catch(() => {
