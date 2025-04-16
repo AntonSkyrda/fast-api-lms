@@ -71,7 +71,7 @@ async def update_course_put(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Course with id {course_id} not found",
         )
-    updated = await course_crud.update(session, course, course_in)
+    updated = await course_crud.update(session, course.id, course_in, partial=False)
     return CourseReadDetailed.from_orm(updated)
 
 
@@ -87,7 +87,7 @@ async def update_course_patch(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Course with id {course_id} not found",
         )
-    updated = await course_crud.update(session, course, course_in)
+    updated = await course_crud.update(session, course.id, course_in, partial=True)
     return CourseReadDetailed.from_orm(updated)
 
 
