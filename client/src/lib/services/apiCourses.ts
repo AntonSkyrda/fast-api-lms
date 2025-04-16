@@ -7,12 +7,14 @@ import {
 } from "../../schemas/coursesSchema";
 import { getToken } from "../utils/manageCookie";
 import { z } from "zod";
-import { courseAddAndUpdateFormSchema } from "../../schemas/formsSchemas";
+import {
+  courseFormSchema,
+  courseUpdateSchemaPartial,
+} from "../../schemas/formsSchemas";
 import { coursePlainSchema } from "../../schemas/plainShemas";
 import { ITEMS_PER_PAGE } from "../consts";
 
 export async function getCourses(offset: number = 0) {
-  console.log("page:", offset, "offset:", offset * ITEMS_PER_PAGE);
   const token = getToken();
   if (!token) throw new Error("Ви не авторизовані!");
 
@@ -59,9 +61,7 @@ export async function getCourseById(id: string) {
   return course;
 }
 
-export async function addCourse(
-  data: z.infer<typeof courseAddAndUpdateFormSchema>,
-) {
+export async function addCourse(data: z.infer<typeof courseFormSchema>) {
   const token = getToken();
   if (!token) throw new Error("Ви не авторизовані!");
 
@@ -85,7 +85,7 @@ export async function addCourse(
 }
 
 export async function updateCourse(
-  data: z.infer<typeof courseAddAndUpdateFormSchema>,
+  data: z.infer<typeof courseUpdateSchemaPartial>,
   id: number,
 ) {
   const token = getToken();
@@ -101,8 +101,6 @@ export async function updateCourse(
     .catch(() => {
       throw new Error("Не вдалось оновити цей курс!");
     });
-
-  // console.log(res.data);
 
   const { success, data: course } =
     await coursePlainPartialSchema.safeParseAsync(res.data);

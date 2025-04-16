@@ -10,7 +10,7 @@ import {
   AlertDialogContent,
 } from "../../ui/AlertDialog";
 import { Trash } from "lucide-react";
-import { useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "../../contexts/Auth/useAuth";
 import { buttonVariants } from "../../ui/Button";
 import { z } from "zod";
 

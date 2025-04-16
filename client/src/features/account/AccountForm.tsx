@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 import { userUpdateFormSchema } from "../../schemas/formsSchemas";
-import { useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "../../contexts/Auth/useAuth";
 import {
   Form,
   FormControl,
@@ -35,10 +35,25 @@ function AccountForm() {
     },
   });
 
+  if (!user) return null;
+
   function onSubmit(data: FieldValues) {
     const { success, data: fields } = userUpdateFormSchema.safeParse(data);
     if (!success) return;
-    // console.log(fields);
+
+    // No patch support on backend
+    // const changedData = form.formState.dirtyFields;
+
+    // if (Object.keys(changedData).length === 0) return;
+
+    // (Object.keys(fields) as (keyof typeof fields)[]).forEach((key) => {
+    //   if (fields[key] !== user?.[key]) {
+    //     changedData[key] = fields[key];
+    //   }
+    // });
+
+    // if (Object.keys(changedData).length === 0) return;
+
     updateUser(fields);
   }
 
