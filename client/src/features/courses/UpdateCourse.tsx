@@ -11,7 +11,7 @@ import {
 import CurseForm from "./CurseForm";
 import { Pencil } from "lucide-react";
 import { z } from "zod";
-import { coursePlainSchema } from "../../schemas/coursesSchema";
+import { coursePlainSchema } from "../../schemas/plainShemas";
 
 function UpdateCourse({
   course,

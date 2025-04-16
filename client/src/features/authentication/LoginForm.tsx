@@ -13,7 +13,7 @@ import { FieldValues, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginFormSchema } from "../../schemas/formsSchemas";
 import { z } from "zod";
-import { useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "../../contexts/Auth/useAuth";
 
 export default function LoginForm() {
   const form = useForm<z.infer<typeof loginFormSchema>>({

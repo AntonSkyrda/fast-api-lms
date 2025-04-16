@@ -34,7 +34,5 @@ export function useCourses() {
       queryFn: () => getCourses(page - 1),
     });
 
-  console.log("page:", page, "pages:", pageCount);
-
   return { isLoading, totalCourses, courses, coursesError };
 }

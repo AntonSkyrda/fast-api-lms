@@ -17,7 +17,7 @@ export const addTeacherToCourseFormSchema = z.object({
 });
 
 // Course scheme for form validation for create/update course
-export const courseAddAndUpdateFormSchema = z.object({
+export const courseFormSchema = z.object({
   name: z
     .string({ required_error: "Це поле обовʼязкове!" })
     .min(5, { message: "Назва курсу має містити хоча б 5 символів" })
@@ -33,6 +33,8 @@ export const courseAddAndUpdateFormSchema = z.object({
     })
     .trim(),
 });
+
+export const courseUpdateSchemaPartial = courseFormSchema.partial();
 
 export const userAddFormSchema = z.object({
   email: z
@@ -59,4 +61,7 @@ export const userAddFormSchema = z.object({
 });
 
 // User schema for validation user update form
+// export const userUpdateFormSchema = userAddFormSchema.omit({
+//   password: true,
+// });
 export const userUpdateFormSchema = userAddFormSchema.partial();

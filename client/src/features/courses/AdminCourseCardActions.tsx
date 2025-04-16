@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "../../contexts/Auth/useAuth";
 import UpdateCourse from "./UpdateCourse";
 import DeleteCourse from "./DeleteCourse";
 import { coursePlainSchema } from "../../schemas/plainShemas";
