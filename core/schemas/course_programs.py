@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 
 class CourseProgramBase(BaseModel):
@@ -11,6 +11,8 @@ class CourseProgramBase(BaseModel):
 class CourseProgramRead(CourseProgramBase):
     id: int
 
+    model_config = ConfigDict(from_attributes=True)
+
 
 class CourseProgramCreate(CourseProgramBase):
     pass
@@ -21,7 +23,7 @@ class CourseProgramUpdate(CourseProgramBase):
 
 
 class CourseProgramUpdatePartial(BaseModel):
-    title: str | None
-    order: int | None
-    count_hours: int | None
-    course_id: int | None
+    title: str | None = None
+    order: int | None = None
+    count_hours: int | None = None
+    course_id: int | None = None
