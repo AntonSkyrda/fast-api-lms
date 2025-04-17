@@ -10,6 +10,7 @@ from .course_group_association import course_group_association_table
 if TYPE_CHECKING:
     from .group import Group
     from .user import User
+    from .course_program import CourseProgram
 
 
 class Course(IdIntPkMixin, BaseModel):
@@ -23,3 +24,9 @@ class Course(IdIntPkMixin, BaseModel):
     teacher_id: Mapped[int | None] = mapped_column(ForeignKey("user.id"), nullable=True)
 
     teacher: Mapped["User | None"] = relationship("User", back_populates="courses")
+
+    programs: Mapped[list["CourseProgram"]] = relationship(
+        "CourseProgram",
+        back_populates="course",
+        cascade="all, delete-orphan",
+    )
