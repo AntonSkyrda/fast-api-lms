@@ -9,7 +9,7 @@ import {
   DialogTrigger,
 } from "../../ui/Dialog";
 import CurseForm from "./CurseForm";
-import { useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "../../contexts/Auth/useAuth";
 
 function AddCourse() {
   const [isOpen, setIsOpen] = useState(false);

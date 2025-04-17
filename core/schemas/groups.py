@@ -16,8 +16,7 @@ class GroupCreate(GroupBase):
 
 
 class GroupUpdate(BaseModel):
-    name: str | None = None
-    year_of_study: int | None = None
+    pass
 
 
 class GroupUpdatePartial(BaseModel):

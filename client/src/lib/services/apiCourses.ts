@@ -1,30 +1,42 @@
 import axios from "axios";
 
-import { courseSimpleSchema, coursesSchema } from "../../schemas/coursesSchema";
+import {
+  courseDetailedSchema,
+  coursePlainPartialSchema,
+  coursesSchema,
+} from "../../schemas/coursesSchema";
 import { getToken } from "../utils/manageCookie";
 import { z } from "zod";
+import {
+  courseFormSchema,
+  courseUpdateSchemaPartial,
+} from "../../schemas/formsSchemas";
+import { coursePlainSchema } from "../../schemas/plainShemas";
+import { ITEMS_PER_PAGE } from "../consts";
 
-export async function getCourses() {
+export async function getCourses(offset: number = 0) {
   const token = getToken();
   if (!token) throw new Error("Ви не авторизовані!");
 
   const res = await axios
-    .get(`${import.meta.env.VITE_BASE_URL}/api/v1/courses`, {
-      headers: {
-        accept: "application/json",
-        Authorization: `${token?.token_type} ${token?.access_token}`,
+    .get(
+      `${import.meta.env.VITE_BASE_URL}/api/v1/courses?limit=${ITEMS_PER_PAGE}&offset=${offset * ITEMS_PER_PAGE}`,
+      {
+        headers: {
+          accept: "application/json",
+          Authorization: `${token?.token_type} ${token?.access_token}`,
+        },
       },
-      withCredentials: true,
-    })
+    )
     .catch(() => {
       throw new Error("Сталася помилка при отриманні курсів.");
     });
 
-  const { success, data: courses } = await coursesSchema.safeParseAsync(
+  const { success, data: coursesData } = await coursesSchema.safeParseAsync(
     res.data,
   );
   if (!success) throw new Error("There is Error with loading Courses data");
-  return courses;
+  return coursesData;
 }
 
 export async function getCourseById(id: string) {
@@ -37,12 +49,11 @@ export async function getCourseById(id: string) {
         accept: "application/json",
         Authorization: `${token?.token_type} ${token?.access_token}`,
       },
-      withCredentials: true,
     })
     .catch(() => {
       throw new Error("Такого курсу не існує!");
     });
-  const { success, data: course } = await courseSimpleSchema.safeParseAsync(
+  const { success, data: course } = await courseDetailedSchema.safeParseAsync(
     res.data,
   );
   // console.log(error);
@@ -50,7 +61,7 @@ export async function getCourseById(id: string) {
   return course;
 }
 
-export async function addCourse(data: z.infer<typeof courseSimpleSchema>) {
+export async function addCourse(data: z.infer<typeof courseFormSchema>) {
   const token = getToken();
   if (!token) throw new Error("Ви не авторизовані!");
 
@@ -60,13 +71,12 @@ export async function addCourse(data: z.infer<typeof courseSimpleSchema>) {
         accept: "application/json",
         Authorization: `${token?.token_type} ${token?.access_token}`,
       },
-      withCredentials: true,
     })
     .catch(() => {
       throw new Error("Не вдалось додати новий курс!");
     });
 
-  const { success, data: course } = await courseSimpleSchema.safeParseAsync(
+  const { success, data: course } = await coursePlainSchema.safeParseAsync(
     res.data,
   );
   if (!success) throw new Error(`There is Error with loading Course data`);
@@ -75,7 +85,7 @@ export async function addCourse(data: z.infer<typeof courseSimpleSchema>) {
 }
 
 export async function updateCourse(
-  data: z.infer<typeof courseSimpleSchema>,
+  data: z.infer<typeof courseUpdateSchemaPartial>,
   id: number,
 ) {
   const token = getToken();
@@ -87,15 +97,13 @@ export async function updateCourse(
         accept: "application/json",
         Authorization: `${token?.token_type} ${token?.access_token}`,
       },
-      withCredentials: true,
     })
     .catch(() => {
       throw new Error("Не вдалось оновити цей курс!");
     });
 
-  const { success, data: course } = await courseSimpleSchema.safeParseAsync(
-    res.data,
-  );
+  const { success, data: course } =
+    await coursePlainPartialSchema.safeParseAsync(res.data);
   if (!success) throw new Error(`There is Error with loading Course data`);
 
   return course;
@@ -111,7 +119,6 @@ export async function deleteCourse(id: number) {
         accept: "application/json",
         Authorization: `${token?.token_type} ${token?.access_token}`,
       },
-      withCredentials: true,
     })
     .catch(() => {
       throw new Error("Не вдалось видалити цей курс!");
@@ -130,14 +137,13 @@ export async function addTeacherToCourse(courseId: number, teacherId: number) {
           accept: "application/json",
           Authorization: `${token?.token_type} ${token?.access_token}`,
         },
-        withCredentials: true,
       },
     )
     .catch(() => {
       throw new Error("Не вдалось додати викладача до цього курс!");
     });
 
-  const { success, data: course } = await courseSimpleSchema.safeParseAsync(
+  const { success, data: course } = await courseDetailedSchema.safeParseAsync(
     res.data,
   );
   if (!success) throw new Error(`There is Error with loading Course data`);
@@ -157,14 +163,13 @@ export async function removeTeacherFromCourse(courseId: number) {
           accept: "application/json",
           Authorization: `${token?.token_type} ${token?.access_token}`,
         },
-        withCredentials: true,
       },
     )
     .catch(() => {
       throw new Error("Не вдалось видалити викладача до цього курс!");
     });
-
-  const { success, data: course } = await courseSimpleSchema.safeParseAsync(
+  console.log(res);
+  const { success, data: course } = await courseDetailedSchema.safeParseAsync(
     res.data,
   );
   if (!success) throw new Error(`There is Error with loading Course data`);

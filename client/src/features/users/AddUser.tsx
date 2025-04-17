@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../../ui/Dialog";
+} from "../../ui/dialog";
 import AddUserForm from "./AddUserForm";
 
 function AddUser() {

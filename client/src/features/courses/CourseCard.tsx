@@ -6,15 +6,15 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "../../ui/Card";
-import { courseSimpleSchema } from "../../schemas/coursesSchema";
+} from "../../ui/card";
 import { Button, buttonVariants } from "../../ui/Button";
 import { NavLink } from "react-router-dom";
-import { Popover, PopoverContent, PopoverTrigger } from "../../ui/Popover";
+import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
 import CourseCardActions from "./CourseCardActions";
 import { EllipsisVertical } from "lucide-react";
+import { coursePlainSchema } from "../../schemas/plainShemas";
 
-type Course = z.infer<typeof courseSimpleSchema>;
+type Course = z.infer<typeof coursePlainSchema>;
 
 interface CourseCardProps {
   course: Course;

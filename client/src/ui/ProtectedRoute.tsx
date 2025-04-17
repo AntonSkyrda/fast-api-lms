@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { Navigate } from "react-router-dom";
 import Spinner from "./Spinner";
-import { useAuth } from "../contexts/AuthContext";
+import { useAuth } from "../contexts/Auth/useAuth";
 import { removeToken } from "../lib/utils/manageCookie";
 
 interface ProtectedRouteProps {
