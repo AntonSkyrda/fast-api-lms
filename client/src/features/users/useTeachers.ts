@@ -18,7 +18,7 @@ export function useTeachers() {
     error: teachersError,
   } = useQuery({
     queryKey: ["teachers", page],
-    queryFn: () => getTeachers(page),
+    queryFn: () => getTeachers({ page }),
     enabled: searchParams.get("type") === "teachers",
     retry: false,
   });
@@ -27,13 +27,13 @@ export function useTeachers() {
   if (page < pageCount)
     queryClient.prefetchQuery({
       queryKey: ["courses", page + 1],
-      queryFn: () => getTeachers(page + 1),
+      queryFn: () => getTeachers({ page: page + 1 }),
     });
 
   if (page > 1)
     queryClient.prefetchQuery({
       queryKey: ["courses", page - 1],
-      queryFn: () => getTeachers(page - 1),
+      queryFn: () => getTeachers({ page: page - 1 }),
     });
 
   return { isLoading, totalTeachers, teachers, teachersError };

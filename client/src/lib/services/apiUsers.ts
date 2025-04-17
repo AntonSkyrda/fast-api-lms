@@ -156,13 +156,19 @@ export async function deleteUserById(userId: number) {
     });
 }
 
-export async function getTeachers(offset: number = 0) {
+export async function getTeachers({
+  page = 0,
+  search = "",
+}: {
+  page?: number;
+  search?: string;
+}) {
   const token = getToken();
   if (!token) throw new Error("Ви не авторизовані!");
 
   const res = await axios
     .get(
-      `${import.meta.env.VITE_BASE_URL}/api/v1/teachers?limit=${ITEMS_PER_PAGE}&offset=${offset * ITEMS_PER_PAGE}`,
+      `${import.meta.env.VITE_BASE_URL}/api/v1/teachers?limit=${ITEMS_PER_PAGE}&offset=${page * ITEMS_PER_PAGE}&search=${search}`,
       {
         headers: {
           accept: "application/json",
