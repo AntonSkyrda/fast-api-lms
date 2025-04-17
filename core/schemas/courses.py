@@ -1,6 +1,8 @@
 from pydantic import BaseModel, ConfigDict
+
 from core.schemas.user import UserRead
 from core.schemas.groups import GroupReadBase
+from core.schemas.course_programs import CourseProgramRead
 
 
 class CourseBase(BaseModel):
@@ -35,3 +37,4 @@ class CourseReadPlain(CourseReadBase):
 class CourseReadDetailed(CourseReadBase):
     teacher: UserRead | None = None
     groups: list[GroupReadBase]
+    programs: list[CourseProgramRead]
