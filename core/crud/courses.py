@@ -88,7 +88,11 @@ async def remove_teacher_from_course(
 
     result = await session.execute(
         select(Course)
-        .options(selectinload(Course.groups), selectinload(Course.teacher))
+        .options(
+            selectinload(Course.groups),
+            selectinload(Course.teacher),
+            selectinload(Course.programs),
+        )
         .where(Course.id == course_id)
     )
     return result.scalar_one_or_none()
