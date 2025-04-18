@@ -16,7 +16,11 @@ course_crud = CRUDBase[Course, CourseCreate, CourseUpdate](Course)
 async def get_course_by_id(session: AsyncSession, course_id: int) -> Course | None:
     result = await session.execute(
         select(Course)
-        .options(selectinload(Course.teacher), selectinload(Course.groups))
+        .options(
+            selectinload(Course.teacher),
+            selectinload(Course.groups),
+            selectinload(Course.programs),
+        )
         .where(Course.id == course_id)
     )
     return result.scalar_one_or_none()
