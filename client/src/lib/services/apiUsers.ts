@@ -1,225 +1,105 @@
-import axios from "axios";
-import { getToken } from "../utils/manageCookie";
-import { studentsSchema, teachersSchema } from "../../schemas/usersSchema";
 import { z } from "zod";
+import { studentsSchema, teachersSchema } from "../../schemas/usersSchema";
 import { userSchema } from "../../schemas/plainShemas";
 import {
   userAddFormSchema,
   userUpdateFormSchema,
 } from "../../schemas/formsSchemas";
 import { ITEMS_PER_PAGE } from "../consts";
+import interactWithAPI from "./apiBase";
 
-export async function getUserByToken() {
-  const token = getToken();
-  if (!token) return null;
+export const getUserByToken = () =>
+  interactWithAPI<typeof userSchema, object>({
+    url: "users/me",
+    method: "get",
+    schema: userSchema,
+    methodErrorMessage: "Неможливо отримати дані користувача.",
+    serverErrorRecourseName: "Auth",
+  });
 
-  // const date = new Date();
-  // console.log(date.getHours(), date.getMinutes(), date.getSeconds());
-  // console.log("Token:", token);
-  // console.log("Auth Header:", `${token?.token_type} ${token?.access_token}`);
-
-  const res = await axios
-    .get(`${import.meta.env.VITE_BASE_URL}/api/v1/users/me`, {
-      headers: {
-        accept: "application/json",
-        Authorization: `${token?.token_type} ${token?.access_token}`,
-      },
-    })
-    .catch(() => {
-      throw new Error("Неможливо отримати дані користувача.");
-    });
-
-  // console.log(res);
-
-  const { success, data: user } = await userSchema.safeParseAsync(res.data);
-  if (!success)
-    throw new Error(
-      " There is an error with authentication service. Please contact administrator.",
-    );
-
-  return user;
-}
-
-export async function addUser(data: z.infer<typeof userAddFormSchema>) {
-  const token = getToken();
-  if (!token) throw new Error("Ви не авторизовані!");
-
-  const res = await axios.post(
-    `${import.meta.env.VITE_BASE_URL}/api/v1/auth/register`,
+export const addUser = (data: z.infer<typeof userAddFormSchema>) =>
+  interactWithAPI<typeof userSchema, z.infer<typeof userAddFormSchema>>({
+    url: "auth/register",
+    method: "post",
+    schema: userSchema,
     data,
-  );
+    methodErrorMessage: "Не вдалось додати користувача.",
+    serverErrorRecourseName: "User",
+  });
 
-  const { success, data: user } = await userSchema.safeParseAsync(res.data);
-  if (!success)
-    throw new Error(
-      " There is an error with authentication service. Please contact administrator.",
-    );
-  return user;
-}
+export const updateUser = (data: z.infer<typeof userUpdateFormSchema>) =>
+  interactWithAPI<typeof userSchema, z.infer<typeof userUpdateFormSchema>>({
+    url: "users/me",
+    method: "patch",
+    schema: userSchema,
+    data,
+    methodErrorMessage: "Сталася помилка при Оновленні даних.",
+    serverErrorRecourseName: "User",
+  });
 
-export async function updateUser(data: z.infer<typeof userUpdateFormSchema>) {
-  const token = getToken();
-  if (!token) throw new Error("Ви не авторизовані!");
+export const getUserById = (userId: number) =>
+  interactWithAPI<typeof userSchema, object>({
+    url: `users/${userId}`,
+    method: "get",
+    schema: userSchema,
+    methodErrorMessage: "Неможливо отримати дані користувача.",
+    serverErrorRecourseName: "User",
+  });
 
-  const res = await axios
-    .patch(`${import.meta.env.VITE_BASE_URL}/api/v1/users/me`, data, {
-      headers: {
-        accept: "application/json",
-        Authorization: `${token?.token_type} ${token?.access_token}`,
-        "Content-Type": "application/json",
-      },
-    })
-    .catch((error) => {
-      console.log(error);
-      throw new Error("Сталася помилка при Оновленні даних.");
-    });
-
-  console.log(res.data);
-
-  const { success, data: user } = await userSchema.safeParseAsync(res.data);
-  if (!success)
-    throw new Error(
-      " There is an error with authentication service. Please contact administrator.",
-    );
-
-  return user;
-}
-
-export async function getUserById(userId: number) {
-  const token = getToken();
-  if (!token) return null;
-
-  const res = await axios
-    .get(`${import.meta.env.VITE_BASE_URL}/api/v1/users/${userId}`, {
-      headers: {
-        accept: "application/json",
-        Authorization: `${token?.token_type} ${token?.access_token}`,
-      },
-    })
-    .catch(() => {
-      throw new Error("Неможливо отримати дані користувача.");
-    });
-
-  const { success, data: user } = await userSchema.safeParseAsync(res.data);
-  if (!success)
-    throw new Error(
-      " There is an error with authentication service. Please contact administrator.",
-    );
-
-  return user;
-}
-
-export async function updateUserById(
+export const updateUserById = (
   updateData: z.infer<typeof userAddFormSchema>,
   userId: number,
-) {
-  const token = getToken();
-  if (!token) return null;
+) =>
+  interactWithAPI<typeof userSchema, z.infer<typeof userAddFormSchema>>({
+    url: `users/${userId}`,
+    method: "patch",
+    schema: userSchema,
+    data: updateData,
+    methodErrorMessage: "Неможливо оновити дані користувача.",
+    serverErrorRecourseName: "User",
+  });
 
-  const res = await axios
-    .patch(
-      `${import.meta.env.VITE_BASE_URL}/api/v1/users/${userId}`,
-      updateData,
-      {
-        headers: {
-          accept: "application/json",
-          Authorization: `${token?.token_type} ${token?.access_token}`,
-        },
-      },
-    )
-    .catch(() => {
-      throw new Error("Неможливо отримати дані користувача.");
-    });
+export const deleteUserById = (userId: number) =>
+  interactWithAPI<z.ZodVoid, object>({
+    url: `users/${userId}`,
+    method: "delete",
+    schema: z.void(),
+    methodErrorMessage: "Неможливо видалити користувача.",
+    serverErrorRecourseName: "User",
+  });
 
-  const { success, data: user } = await userSchema.safeParseAsync(res.data);
-  if (!success)
-    throw new Error(
-      " There is an error with authentication service. Please contact administrator.",
-    );
+export const getTeachers = ({ offset = 0 }: { offset?: number }) =>
+  interactWithAPI<typeof teachersSchema, object>({
+    url: `teachers?limit=${ITEMS_PER_PAGE}&offset=${offset * ITEMS_PER_PAGE}`,
+    method: "get",
+    schema: teachersSchema,
+    methodErrorMessage: "Сталася помилка при отримані даних викладачів.",
+    serverErrorRecourseName: "Teachers",
+  });
 
-  return user;
-}
+export const findTeachers = (searchStr: string = "") =>
+  interactWithAPI<typeof teachersSchema, object>({
+    url: `teachers?search=${searchStr}`,
+    method: "get",
+    schema: teachersSchema,
+    methodErrorMessage: "Сталася помилка при отримані даних викладачів.",
+    serverErrorRecourseName: "Teachers",
+  });
 
-export async function deleteUserById(userId: number) {
-  const token = getToken();
-  if (!token) return null;
+export const getStudents = (offset: number = 0) =>
+  interactWithAPI<typeof studentsSchema, object>({
+    url: `students?limit=${ITEMS_PER_PAGE}&offset=${offset * ITEMS_PER_PAGE}`,
+    method: "get",
+    schema: studentsSchema,
+    methodErrorMessage: "Сталася помилка при отримані даних студентів.",
+    serverErrorRecourseName: "Students",
+  });
 
-  await axios
-    .delete(`${import.meta.env.VITE_BASE_URL}/api/v1/users/${userId}`, {
-      headers: {
-        accept: "application/json",
-        Authorization: `${token?.token_type} ${token?.access_token}`,
-      },
-    })
-    .catch(() => {
-      throw new Error("Неможливо отримати дані користувача.");
-    });
-}
-
-export async function getTeachers({
-  page = 0,
-  search = "",
-}: {
-  page?: number;
-  search?: string;
-}) {
-  const token = getToken();
-  if (!token) throw new Error("Ви не авторизовані!");
-
-  const res = await axios
-    .get(
-      `${import.meta.env.VITE_BASE_URL}/api/v1/teachers?limit=${ITEMS_PER_PAGE}&offset=${page * ITEMS_PER_PAGE}&search=${search}`,
-      {
-        headers: {
-          accept: "application/json",
-          Authorization: `${token?.token_type} ${token?.access_token}`,
-          "Content-Type": "application/json",
-        },
-      },
-    )
-    .catch((error) => {
-      console.log(error);
-      throw new Error("Сталася помилка при отримані даних викладачів.");
-    });
-
-  const { success, data: teachersData } = await teachersSchema.safeParseAsync(
-    res.data,
-  );
-  if (!success)
-    throw new Error(
-      " There is an error with authentication service. Please contact administrator.",
-    );
-
-  return teachersData;
-}
-
-export async function getStudents(offset: number = 0) {
-  const token = getToken();
-  if (!token) throw new Error("Ви не авторизовані!");
-
-  const res = await axios
-    .get(
-      `${import.meta.env.VITE_BASE_URL}/api/v1/students?limit=${ITEMS_PER_PAGE}&offset=${offset * ITEMS_PER_PAGE}`,
-      {
-        headers: {
-          accept: "application/json",
-          Authorization: `${token?.token_type} ${token?.access_token}`,
-          "Content-Type": "application/json",
-        },
-      },
-    )
-    .catch((error) => {
-      console.log(error);
-      throw new Error("Сталася помилка при отримані даних студентів.");
-    });
-
-  const { success, data: studentsData } = await studentsSchema.safeParseAsync(
-    res.data,
-  );
-  if (!success)
-    throw new Error(
-      " There is an error with authentication service. Please contact administrator.",
-    );
-
-  return studentsData;
-}
+export const findStudents = (searchStr: string = "") =>
+  interactWithAPI<typeof studentsSchema, object>({
+    url: `students?search=${searchStr}`,
+    method: "get",
+    schema: studentsSchema,
+    methodErrorMessage: "Сталася помилка при отримані даних студентів.",
+    serverErrorRecourseName: "Students",
+  });
