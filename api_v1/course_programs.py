@@ -1,4 +1,5 @@
 from fastapi import APIRouter, HTTPException, status, Depends, Query
+from fastapi.responses import Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import db_helper
@@ -94,7 +95,7 @@ async def update_course_program_patch(
     return CourseProgramRead.from_orm(updated_course_program)
 
 
-@router.delete("/{course_program_id}", response_model=CourseProgramRead)
+@router.delete("/{course_program_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_course_program(
     course_program_id: int,
     session: AsyncSession = Depends(db_helper.session_getter),
@@ -106,4 +107,4 @@ async def delete_course_program(
             detail=f"Course program with id {course_program_id} not found",
         )
     await course_program_crud.remove(session, course_program_id)
-    return CourseProgramRead.from_orm(course_program)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
