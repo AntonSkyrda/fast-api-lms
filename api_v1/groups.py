@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException, Depends, Query
+from fastapi import APIRouter, HTTPException, Depends, Query, status
+from fastapi.responses import Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import db_helper, User
@@ -81,7 +82,7 @@ async def update_group_patch(
     return GroupReadDetailed.from_orm(updated)
 
 
-@router.delete("/{group_id}/", response_model=GroupReadDetailed)
+@router.delete("/{group_id}/", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_group(
     group_id: int,
     session: AsyncSession = Depends(db_helper.session_getter),
@@ -90,7 +91,7 @@ async def delete_group(
     if not group:
         raise HTTPException(404, detail="Group not found")
     await group_crud.remove(session, group_id)
-    return GroupReadDetailed.from_orm(group)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.post("/{group_id}/students/{user_id}/", response_model=GroupReadDetailed)
