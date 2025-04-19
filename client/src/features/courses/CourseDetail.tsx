@@ -40,6 +40,7 @@ function CourseDetail() {
           <div className="flex flex-row items-center gap-5">
             <AddTeacherToCourse />
             <RemoveTeacherFromCourse />
+            <UpdateCourse course={course} />
           </div>
         </div>
       </header>
@@ -53,7 +54,6 @@ function CourseDetail() {
           </span>
           Додати заннятя
         </Button>
-        <UpdateCourse course={course} />
       </div>
     </div>
   );

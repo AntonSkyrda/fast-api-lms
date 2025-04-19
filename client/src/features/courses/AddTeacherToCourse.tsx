@@ -1,6 +1,6 @@
 import { useAuth } from "../../contexts/Auth/useAuth";
 import { useAddTeacherToCourse } from "./useAddTeacherToCourse";
-import { Button, buttonVariants } from "../../ui/Button";
+import { buttonVariants } from "../../ui/button";
 import {
   Dialog,
   DialogContent,
@@ -8,16 +8,14 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../../ui/Dialog";
+} from "../../ui/dialog";
 import { useCourse } from "./useCourse";
 import toast from "react-hot-toast";
 import { Plus } from "lucide-react";
-import Search from "../../ui/Search";
-import { useSearchTeachers } from "../users/useSearchTeachers";
-import SearchResults from "../../ui/SearchResults";
-import { useEffect, useState } from "react";
-import { cn } from "../../lib/utils/cn";
+import { useTeachersSearch } from "../users/useTeachersSearch";
+import { useCallback, useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import TeachersSearch from "../users/TeachersSearch";
 
 function AddTeacherToCourse() {
   const queryClient = useQueryClient();
@@ -27,14 +25,17 @@ function AddTeacherToCourse() {
   const [isOpen, setIsOpen] = useState(false);
 
   const [searchStr, setSearchStr] = useState("");
-  const teachersData = useSearchTeachers(searchStr);
+  const teachersData = useTeachersSearch(searchStr);
 
   const isLoading = isPending || teachersData.isLoading;
 
-  function clear() {
-    queryClient.removeQueries({ queryKey: ["teachers"] });
-    setSearchStr("");
-  }
+  const clear = useCallback(
+    function () {
+      queryClient.removeQueries({ queryKey: ["teachers"] });
+      setSearchStr("");
+    },
+    [queryClient],
+  );
 
   function handleSubmit(teacherId: number) {
     if (!course?.id) {
@@ -73,40 +74,13 @@ function AddTeacherToCourse() {
             Додайте викладача для студентів.
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-8">
-          <Search
-            searchStr={searchStr}
-            onSearchChange={setSearchStr}
-            isLoading={isLoading}
-          />
-          <SearchResults
-            searchStr={searchStr}
-            isLoading={isLoading}
-            resultsLength={teachersData.teachers?.length}
-            recourseName="Викладачів"
-          >
-            {teachersData.teachers?.map((teacher) => (
-              <li
-                key={teacher.id}
-                className={cn(
-                  buttonVariants({ variant: "outline" }),
-                  "flex flex-row items-center justify-between py-4",
-                )}
-              >
-                <p>
-                  {teacher.last_name} {teacher.first_name} {teacher.father_name}
-                </p>
-                <Button
-                  onClick={() => handleSubmit(teacher.id)}
-                  disabled={isLoading}
-                  variant="secondary"
-                >
-                  Додати
-                </Button>
-              </li>
-            ))}
-          </SearchResults>
-        </div>
+        <TeachersSearch
+          searchStr={searchStr}
+          handleSearch={setSearchStr}
+          handleSubmit={handleSubmit}
+          isLoading={isLoading}
+          teachersData={teachersData}
+        />
       </DialogContent>
     </Dialog>
   );

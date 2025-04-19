@@ -10,7 +10,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogContent,
-} from "../../ui/AlertDialog";
+} from "../../ui/alertDialog";
 import { buttonVariants } from "../../ui/Button";
 import { Minus } from "lucide-react";
 import { useRemoveTeacherFromCourse } from "./useRemoveTeacherFromCourse";

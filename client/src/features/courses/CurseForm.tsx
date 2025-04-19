@@ -10,7 +10,7 @@ import {
 import { z } from "zod";
 import { courseFormSchema } from "../../schemas/formsSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "../../ui/Input";
+import { Input } from "../../ui/input";
 import { Button } from "../../ui/Button";
 import { useAddCourse } from "./useAddCourse";
 import Spinner from "../../ui/Spinner";

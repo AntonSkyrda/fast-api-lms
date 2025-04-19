@@ -8,7 +8,7 @@ import {
   FormMessage,
 } from "../../ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "../../ui/Input";
+import { Input } from "../../ui/input";
 
 import { z } from "zod";
 import { Checkbox } from "../../ui/checkbox";

@@ -2,10 +2,10 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { updateCourse as updateCourseApi } from "../../lib/services/apiCourses";
 import toast from "react-hot-toast";
-import { courseAddAndUpdateFormSchema } from "../../schemas/formsSchemas";
+import { courseUpdateSchemaPartial } from "../../schemas/formsSchemas";
 import { useParams } from "react-router-dom";
 
-type UpdateData = z.infer<typeof courseAddAndUpdateFormSchema>;
+type UpdateData = z.infer<typeof courseUpdateSchemaPartial>;
 export function useUpdateCourse() {
   const queryClient = useQueryClient();
   const { courseId } = useParams();
@@ -19,12 +19,6 @@ export function useUpdateCourse() {
       updateCourseApi(data, id),
     onSuccess: (course) => {
       toast.success(`Курс ${course.name} успішно оновленно!`);
-      // Promise.all([
-      //   queryClient.invalidateQueries({
-      //     queryKey: ["course", course.id],
-      //   }),
-      //   queryClient.invalidateQueries({ queryKey: ["courses"] }),
-      // ]);
       if (courseId)
         queryClient.invalidateQueries({
           queryKey: ["course", courseId],

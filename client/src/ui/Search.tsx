@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { Form, FormField, FormItem, FormMessage } from "./form";
-import { Input } from "./Input";
+import { Input } from "./input";
 import { useEffect } from "react";
 
 interface SearchProps {
@@ -26,7 +26,6 @@ function Search({
 
   function handleSearch() {
     const { search } = form.getValues();
-    console.log(search);
     onSearchChange(search);
   }
 
@@ -38,8 +37,6 @@ function Search({
     },
     [reset, form],
   );
-
-  useEffect(() => console.log("mount"));
 
   return (
     <Form {...form}>

@@ -9,7 +9,7 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "../../ui/Sidebar";
+} from "../../ui/sidebar";
 import { useAuth } from "../../contexts/Auth/useAuth";
 import { NavLink } from "react-router-dom";
 

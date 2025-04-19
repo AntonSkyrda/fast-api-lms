@@ -1,5 +1,5 @@
 import { Calendar } from "lucide-react";
-import { Button } from "../../ui/Button";
+import { Button } from "../../ui/button";
 import { z } from "zod";
 import AdminCourseCardActions from "./AdminCourseCardActions";
 import { coursePlainSchema } from "../../schemas/plainShemas";

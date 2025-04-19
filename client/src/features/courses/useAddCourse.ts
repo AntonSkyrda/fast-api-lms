@@ -2,9 +2,9 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
 import { addCourse as addCourseApi } from "../../lib/services/apiCourses";
 import toast from "react-hot-toast";
-import { courseAddAndUpdateFormSchema } from "../../schemas/formsSchemas";
+import { courseFormSchema } from "../../schemas/formsSchemas";
 
-type Data = z.infer<typeof courseAddAndUpdateFormSchema>;
+type Data = z.infer<typeof courseFormSchema>;
 export function useAddCourse() {
   const queryClient = useQueryClient();
 

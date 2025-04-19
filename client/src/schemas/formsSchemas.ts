@@ -65,3 +65,16 @@ export const userAddFormSchema = z.object({
 //   password: true,
 // });
 export const userUpdateFormSchema = userAddFormSchema.partial();
+
+export const groupFormSchema = z.object({
+  name: z
+    .string({ required_error: "Це поле обовʼязкове!" })
+    .min(3, { message: "Назва груп має містити хоча б 3 символи" })
+    .max(100, {
+      message: "Назва групи не має перевищувати 100 символів",
+    })
+    .trim(),
+  year_of_study: z.number().int(),
+});
+
+export const groupUpdateSchemaPartial = groupFormSchema.partial();
