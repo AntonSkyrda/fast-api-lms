@@ -21,6 +21,11 @@ function CourseGroups({ groups }: CourseGroupsProps) {
 
   const isLoading = groupsData.isLoading || isPending;
 
+  const availableGroups = groupsData.groups.filter(
+    (availableGroup) =>
+      !groups.map((group) => group.id).includes(availableGroup.id),
+  );
+
   function hadnleAddGroup(groupId: number) {
     addGroupToCourse(groupId);
     setSearchStr("");
@@ -57,10 +62,10 @@ function CourseGroups({ groups }: CourseGroupsProps) {
           <SearchResults
             searchStr={searchStr}
             recourseName="Групи"
-            resultsLength={groupsData.groups.length}
+            resultsLength={availableGroups.length}
             isLoading={isLoading}
           >
-            {groupsData.groups.map((group) => (
+            {availableGroups.map((group) => (
               <li key={group.id}>
                 <ItemsContainer.AvailableItem
                   onAddItem={() => hadnleAddGroup(group.id)}
