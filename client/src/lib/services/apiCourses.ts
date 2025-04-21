@@ -88,6 +88,30 @@ export const removeTeacherFromCourse = (courseId: number) =>
     url: `courses/${courseId}/teacher`,
     method: "delete",
     schema: courseDetailedSchema,
-    methodErrorMessage: "Не вдалось видалити викладача до цього курс!",
+    methodErrorMessage: "Не вдалось видалити викладача до цього курсу!",
+    serverErrorRecourseName: "Course",
+  });
+
+export const addGroupToCourse = (
+  courseId: number | string,
+  groupId: number | string,
+) =>
+  interactWithAPI<typeof courseDetailedSchema, object>({
+    url: `courses/${courseId}/groups/${groupId}`,
+    method: "post",
+    schema: courseDetailedSchema,
+    methodErrorMessage: "Не вдалось додати групу до цього курсу!",
+    serverErrorRecourseName: "Course",
+  });
+
+export const removeGroupFromCourse = (
+  courseId: number | string,
+  groupId: number | string,
+) =>
+  interactWithAPI<typeof courseDetailedSchema, object>({
+    url: `courses/${courseId}/groups/${groupId}`,
+    method: "delete",
+    schema: courseDetailedSchema,
+    methodErrorMessage: "Не вдалось видалити групу з цього курсу!",
     serverErrorRecourseName: "Course",
   });

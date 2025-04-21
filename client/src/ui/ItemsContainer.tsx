@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "./dialog";
-import { Plus } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import { Button } from "./button";
 
 type ItemsContextType = {
@@ -18,12 +18,10 @@ type ItemsContextType = {
 
 const ItemsContext = createContext<ItemsContextType | null>(null);
 
-function useItemsContext() {
+function useItemsContainer() {
   const context = useContext(ItemsContext);
   if (!context) {
-    throw new Error(
-      "useItemsContext має використовуватися всередині ItemsProvider",
-    );
+    throw new Error("useItemsContainer must be used within ItemsProvider");
   }
   return context;
 }
@@ -40,7 +38,6 @@ function ItemsContainer({
 }: ItemsContainerProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  // Підготовка значення контексту
   const contextValue: ItemsContextType = useMemo(
     () => ({
       isDialogOpen,
@@ -113,12 +110,6 @@ function Content({ className, children, ...props }: ContentProps) {
   );
 }
 
-interface ItemProps {
-  className?: string;
-  children?: React.ReactNode;
-  asChild?: boolean;
-}
-
 interface ItemsListProps {
   className?: string;
   children?: React.ReactNode;
@@ -137,7 +128,7 @@ function ItemsList({
       data-slot="items-list"
       {...props}
     >
-      {children ? (
+      {children?.toString().length ? (
         <>{children}</>
       ) : (
         <div className="flex h-full w-full items-center justify-center">
@@ -150,7 +141,20 @@ function ItemsList({
   );
 }
 
-function Item({ className, children, asChild = false, ...props }: ItemProps) {
+interface ItemProps {
+  className?: string;
+  children?: React.ReactNode;
+  asChild?: boolean;
+  onAction?<T>(itemId: T): void;
+}
+
+function Item({
+  className,
+  children,
+  asChild = false,
+  onAction,
+  ...props
+}: ItemProps) {
   const Comp = asChild ? Slot : "div";
 
   return (
@@ -163,6 +167,13 @@ function Item({ className, children, asChild = false, ...props }: ItemProps) {
       {...props}
     >
       {children}
+
+      <button
+        onClick={onAction}
+        className="text-muted-foreground hover:text-destructive ml-1"
+      >
+        <X size={16} />
+      </button>
     </Comp>
   );
 }
@@ -194,7 +205,7 @@ interface AddButtonProps {
 }
 
 function AddButton({ children = "Додати елемент", ...props }: AddButtonProps) {
-  const { setIsDialogOpen } = useItemsContext();
+  const { setIsDialogOpen } = useItemsContainer();
 
   return (
     <Button
@@ -225,7 +236,7 @@ function ItemsDialog({
   noItemsMessage = "Немає доступних елементів для додавання",
   ...props
 }: ItemsDialogProps) {
-  const { isDialogOpen, setIsDialogOpen } = useItemsContext();
+  const { isDialogOpen, setIsDialogOpen } = useItemsContainer();
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -236,7 +247,7 @@ function ItemsDialog({
         </DialogHeader>
         <div className="space-y-4">
           {children ? (
-            <div className="flex max-h-64 flex-col gap-2 overflow-y-auto pr-2">
+            <div className="flex max-h-64 flex-col gap-6 overflow-y-auto pr-2">
               {children}
             </div>
           ) : (
@@ -254,15 +265,24 @@ interface AvailableItemProps {
   className?: string;
   children?: React.ReactNode;
   asChild?: boolean;
+  onAddItem<T>(elementId?: T): void;
 }
 
 function AvailableItem({
   className,
   children,
   asChild = false,
+  onAddItem,
   ...props
 }: AvailableItemProps) {
   const Comp = asChild ? Slot : "button";
+
+  const { setIsDialogOpen } = useItemsContainer();
+
+  function hadnleAddItem() {
+    onAddItem();
+    setIsDialogOpen(false);
+  }
 
   return (
     <Comp
@@ -274,7 +294,7 @@ function AvailableItem({
       {...props}
     >
       {children}
-      <Plus size={16} />
+      <Plus onClick={hadnleAddItem} size={16} />
     </Comp>
   );
 }
@@ -304,17 +324,4 @@ ItemsContainer.ItemsDialog = ItemsDialog;
 ItemsContainer.Separator = Separator;
 ItemsContainer.AvailableItem = AvailableItem;
 
-export {
-  ItemsContainer,
-  Header,
-  Title,
-  Content,
-  ItemsList,
-  Item,
-  Footer,
-  AddButton,
-  ItemsDialog,
-  AvailableItem,
-  Separator,
-  useItemsContext,
-};
+export { ItemsContainer };

@@ -8,7 +8,7 @@ export const coursePlainSchema = z.object({
 });
 
 export const groupPlainSchema = z.object({
-  id: z.number().int().optional(),
+  id: z.number().int(),
   name: z.string().max(255),
   year_of_study: z.number().int(),
 });

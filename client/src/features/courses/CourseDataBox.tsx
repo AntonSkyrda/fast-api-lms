@@ -2,18 +2,7 @@ import { z } from "zod";
 import Heading from "../../ui/Heading";
 import { courseDetailedSchema } from "../../schemas/coursesSchema";
 import { useAuth } from "../../contexts/Auth/useAuth";
-import {
-  ItemsContainer,
-  Header,
-  Title,
-  Content,
-  Item,
-  ItemsList,
-  AddButton,
-  Footer,
-  ItemsDialog,
-  AvailableItem,
-} from "../../ui/ItemsContainer";
+import CourseGroups from "./CourseGroups";
 
 interface CourseDataBoxProps {
   course: z.infer<typeof courseDetailedSchema>;
@@ -34,12 +23,6 @@ function CourseTeacher({ course }: CourseDataBoxProps) {
   );
 }
 
-const items = [
-  { id: 1, name: "Група 1", year_of_study: 2000 },
-  { id: 2, name: "Група 2", year_of_study: 2001 },
-  { id: 3, name: "Група 3", year_of_study: 2002 },
-];
-
 function CourseDataBox({ course }: CourseDataBoxProps) {
   return (
     <article className="border-goldenrod-200 text-goldenrod-950 space-y-16 overflow-hidden rounded-md border-2 text-base shadow-md">
@@ -56,29 +39,7 @@ function CourseDataBox({ course }: CourseDataBoxProps) {
           <p>{course.description}</p>
         </div>
 
-        <ItemsContainer>
-          <Header>
-            <Title>Групи</Title>
-          </Header>
-
-          <Content>
-            <ItemsList emptyMessage="Жодна група не додана до курсу">
-              {items.map((item) => (
-                <Item key={item.id}>{item.name}</Item>
-              ))}
-            </ItemsList>
-
-            <Footer>
-              <AddButton />
-            </Footer>
-
-            <ItemsDialog>
-              {items.map((item) => (
-                <AvailableItem key={item.id}>{item.name}</AvailableItem>
-              ))}
-            </ItemsDialog>
-          </Content>
-        </ItemsContainer>
+        <CourseGroups groups={course.groups} />
 
         <div className="flex flex-row items-baseline gap-8">
           <Heading as="h4">Програма:</Heading>

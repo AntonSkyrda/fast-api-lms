@@ -60,10 +60,6 @@ export const userAddFormSchema = z.object({
   is_student: z.boolean(),
 });
 
-// User schema for validation user update form
-// export const userUpdateFormSchema = userAddFormSchema.omit({
-//   password: true,
-// });
 export const userUpdateFormSchema = userAddFormSchema.partial();
 
 export const groupFormSchema = z.object({
@@ -74,7 +70,16 @@ export const groupFormSchema = z.object({
       message: "Назва групи не має перевищувати 100 символів",
     })
     .trim(),
-  year_of_study: z.number().int(),
+  year_of_study: z
+    .number()
+    .int()
+    .min(1970, {
+      message: "Дата початку навчання не може бути ранішою за 1970 рік",
+    })
+    .max(
+      new Date().getFullYear() + 1,
+      `Дата початку навчання не може бути пізніша за ${new Date().getFullYear() + 1}`,
+    ),
 });
 
 export const groupUpdateSchemaPartial = groupFormSchema.partial();

@@ -27,7 +27,7 @@ export const findGroups = (searchStr: string) =>
     serverErrorRecourseName: "Groups",
   });
 
-export const createGroup = (data: z.infer<typeof groupFormSchema>) =>
+export const addGroup = (data: z.infer<typeof groupFormSchema>) =>
   interactWithAPI<typeof groupPlainSchema, z.infer<typeof groupFormSchema>>({
     url: "groups/",
     method: "post",
