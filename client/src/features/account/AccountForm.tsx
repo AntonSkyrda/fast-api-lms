@@ -11,9 +11,9 @@ import {
   FormLabel,
   FormMessage,
 } from "../../ui/form";
-import { Input } from "../../ui/Input";
+import { Input } from "../../ui/input";
 import { Checkbox } from "../../ui/checkbox";
-import { Button } from "../../ui/Button";
+import { Button } from "../../ui/button";
 import Spinner from "../../ui/Spinner";
 import { useUpdateUser } from "./useUpdateUser";
 

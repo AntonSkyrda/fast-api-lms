@@ -8,11 +8,11 @@ import {
   FormMessage,
 } from "../../ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "../../ui/Input";
+import { Input } from "../../ui/input";
 
 import { z } from "zod";
 import { Checkbox } from "../../ui/checkbox";
-import { Button } from "../../ui/Button";
+import { Button } from "../../ui/button";
 import { useAddUser } from "./useAddUser";
 import Spinner from "../../ui/Spinner";
 // import { useEffect } from "react";

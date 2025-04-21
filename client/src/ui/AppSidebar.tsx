@@ -21,7 +21,7 @@ import {
   SidebarMenuItem,
   SidebarRail,
   SidebarSeparator,
-} from "../ui/Sidebar";
+} from "./sidebar";
 import { NavLink } from "react-router-dom";
 import ShortUser from "../features/account/ShortUser";
 import { useAuth } from "../contexts/Auth/useAuth";

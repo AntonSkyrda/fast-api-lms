@@ -6,29 +6,29 @@ import { courseUpdateSchemaPartial } from "../../schemas/formsSchemas";
 import { useParams } from "react-router-dom";
 
 type UpdateData = z.infer<typeof courseUpdateSchemaPartial>;
-export function useUpdateCourse() {
+export function useUpdateGroup() {
   const queryClient = useQueryClient();
-  const { courseId } = useParams();
+  const { groupId } = useParams();
 
   const {
-    mutate: updateCourse,
+    mutate: updateGroup,
     isPending,
-    error: updateCourseError,
+    error: updateGroupError,
   } = useMutation({
     mutationFn: ({ data, id }: { data: UpdateData; id: number }) =>
       updateCourseApi(data, id),
-    onSuccess: (course) => {
-      toast.success(`Курс ${course.name} успішно оновленно!`);
-      if (courseId)
+    onSuccess: (group) => {
+      toast.success(`Групу ${group.name} успішно оновленно!`);
+      if (groupId)
         queryClient.invalidateQueries({
-          queryKey: ["course", courseId],
+          queryKey: ["group", groupId],
         });
-      queryClient.invalidateQueries({ queryKey: ["courses"] });
+      queryClient.invalidateQueries({ queryKey: ["groups"] });
     },
     onError: (error) => {
       toast.error(error.message);
     },
   });
 
-  return { updateCourse, isPending, updateCourseError };
+  return { updateGroup, isPending, updateGroupError };
 }

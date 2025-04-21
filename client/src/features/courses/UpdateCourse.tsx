@@ -7,7 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../../ui/Dialog";
+} from "../../ui/dialog";
 import CurseForm from "./CurseForm";
 import { Pencil } from "lucide-react";
 import { z } from "zod";

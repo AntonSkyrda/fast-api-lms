@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "../../ui/card";
-import { Button, buttonVariants } from "../../ui/Button";
+import { Button, buttonVariants } from "../../ui/button";
 import { NavLink } from "react-router-dom";
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
 import CourseCardActions from "./CourseCardActions";

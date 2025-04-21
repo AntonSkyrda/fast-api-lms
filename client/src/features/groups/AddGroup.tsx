@@ -8,10 +8,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "../../ui/dialog";
-import CurseForm from "./CurseForm";
 import { useAuth } from "../../contexts/Auth/useAuth";
+import GroupForm from "./GroupForm";
 
-function AddCourse() {
+function AddGroup() {
   const [isOpen, setIsOpen] = useState(false);
   const { user } = useAuth();
 
@@ -20,19 +20,19 @@ function AddCourse() {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger className={buttonVariants({ variant: "default" })}>
-        Створити новий курс
+        Створити нову групу
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Створення нового курсу</DialogTitle>
+          <DialogTitle>Створення нової груп</DialogTitle>
           <DialogDescription className="mb-6">
-            Створіть курс для своїх студентів
+            Створіть групу для своїх студентів
           </DialogDescription>
         </DialogHeader>
-        <CurseForm isOpen={isOpen} handleClose={setIsOpen} />
+        <GroupForm isOpen={isOpen} handleClose={setIsOpen} />
       </DialogContent>
     </Dialog>
   );
 }
 
-export default AddCourse;
+export default AddGroup;

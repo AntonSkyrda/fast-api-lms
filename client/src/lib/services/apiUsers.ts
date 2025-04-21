@@ -68,7 +68,7 @@ export const deleteUserById = (userId: number) =>
     serverErrorRecourseName: "User",
   });
 
-export const getTeachers = ({ offset = 0 }: { offset?: number }) =>
+export const getTeachers = (offset: number = 0) =>
   interactWithAPI<typeof teachersSchema, object>({
     url: `teachers?limit=${ITEMS_PER_PAGE}&offset=${offset * ITEMS_PER_PAGE}`,
     method: "get",

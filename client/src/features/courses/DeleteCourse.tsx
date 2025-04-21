@@ -8,7 +8,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
   AlertDialogContent,
-} from "../../ui/AlertDialog";
+} from "../../ui/alertDialog";
 import { Trash } from "lucide-react";
 import { useAuth } from "../../contexts/Auth/useAuth";
 import { buttonVariants } from "../../ui/Button";
