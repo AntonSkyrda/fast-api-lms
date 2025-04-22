@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { buttonVariants } from "../../ui/Button";
+import { buttonVariants } from "../../ui/button";
 import {
   Dialog,
   DialogContent,

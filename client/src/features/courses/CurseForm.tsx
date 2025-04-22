@@ -20,8 +20,8 @@ import { coursePlainSchema } from "../../schemas/plainShemas";
 import { getChangedFields } from "../../lib/utils/getChangedFields";
 
 interface CourseFormProps {
-  isOpen: boolean;
-  handleClose: (isOpen: boolean) => void;
+  isOpen?: boolean;
+  handleClose?: (isOpen: boolean) => void;
   courseToEdit?: z.infer<typeof coursePlainSchema>;
 }
 function CurseForm({ isOpen, handleClose, courseToEdit }: CourseFormProps) {
@@ -46,13 +46,6 @@ function CurseForm({ isOpen, handleClose, courseToEdit }: CourseFormProps) {
     [isOpen, form],
   );
 
-  // useEffect(
-  //   function () {
-  //     console.log(form.formState.errors);
-  //   },
-  //   [handleClose, form.formState],
-  // );
-
   function onSubmit(data: FieldValues) {
     const { success, data: courseData } = courseFormSchema.safeParse(data);
     if (!success) return;
@@ -69,14 +62,14 @@ function CurseForm({ isOpen, handleClose, courseToEdit }: CourseFormProps) {
         {
           onSuccess: () => {
             form.reset();
-            handleClose(false);
+            handleClose?.(false);
           },
         },
       );
     } else {
       addCourse(courseData);
       form.reset();
-      handleClose(false);
+      handleClose?.(false);
     }
   }
 

@@ -1,4 +1,4 @@
-import { createContext, useContext, useMemo, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cn } from "../lib/utils/cn";
 import {
@@ -124,7 +124,7 @@ function ItemsList({
 }: ItemsListProps) {
   return (
     <div
-      className={cn("flex min-h-24 flex-wrap gap-2", className)}
+      className={cn("flex min-h-12 flex-wrap gap-2", className)}
       data-slot="items-list"
       {...props}
     >
@@ -145,6 +145,7 @@ interface ItemProps {
   className?: string;
   children?: React.ReactNode;
   asChild?: boolean;
+  isActionAvailable?: boolean;
   onAction?<T>(itemId: T): void;
 }
 
@@ -152,6 +153,7 @@ function Item({
   className,
   children,
   asChild = false,
+  isActionAvailable = true,
   onAction,
   ...props
 }: ItemProps) {
@@ -168,12 +170,14 @@ function Item({
     >
       {children}
 
-      <button
-        onClick={onAction}
-        className="text-muted-foreground hover:text-destructive ml-1"
-      >
-        <X size={16} />
-      </button>
+      {isActionAvailable && (
+        <button
+          onClick={onAction}
+          className="text-muted-foreground hover:text-destructive ml-1"
+        >
+          <X size={16} />
+        </button>
+      )}
     </Comp>
   );
 }
@@ -226,6 +230,7 @@ interface ItemsDialogProps {
   description?: React.ReactNode;
   children?: React.ReactNode;
   noItemsMessage?: string;
+  handleClear?: () => void;
 }
 
 function ItemsDialog({
@@ -234,9 +239,17 @@ function ItemsDialog({
   description = "Виберіть елемент, який хочете додати",
   children,
   noItemsMessage = "Немає доступних елементів для додавання",
+  handleClear,
   ...props
 }: ItemsDialogProps) {
   const { isDialogOpen, setIsDialogOpen } = useItemsContainer();
+
+  useEffect(
+    function () {
+      if (!isDialogOpen && !!handleClear) handleClear();
+    },
+    [handleClear, isDialogOpen],
+  );
 
   return (
     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>

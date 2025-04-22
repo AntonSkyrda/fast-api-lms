@@ -20,8 +20,8 @@ import { groupPlainSchema } from "../../schemas/plainShemas";
 import { getChangedFields } from "../../lib/utils/getChangedFields";
 
 interface CourseFormProps {
-  isOpen: boolean;
-  handleClose: (isOpen: boolean) => void;
+  isOpen?: boolean;
+  handleClose?: (isOpen: boolean) => void;
   groupToEdit?: z.infer<typeof groupPlainSchema>;
 }
 function GroupForm({ isOpen, handleClose, groupToEdit }: CourseFormProps) {
@@ -36,24 +36,17 @@ function GroupForm({ isOpen, handleClose, groupToEdit }: CourseFormProps) {
 
   const form = useForm<z.infer<typeof groupFormSchema>>({
     resolver: zodResolver(groupFormSchema),
-    defaultValues: isEditSession
-      ? editValues
-      : { name: "", year_of_study: new Date().getFullYear() },
+    defaultValues: isEditSession ? editValues : { name: "", year_of_study: 1 },
   });
 
   useEffect(
     function () {
-      if (isOpen === false) return () => form.reset();
+      return () => {
+        if (isOpen === false) form.reset();
+      };
     },
     [isOpen, form],
   );
-
-  // useEffect(
-  //   function () {
-  //     console.log(form.formState.errors);
-  //   },
-  //   [handleClose, form.formState],
-  // );
 
   function onSubmit(data: FieldValues) {
     const formData = {
@@ -70,8 +63,6 @@ function GroupForm({ isOpen, handleClose, groupToEdit }: CourseFormProps) {
     if (isEditSession && typeof editId === "number") {
       const changedData = getChangedFields(groupData, editValues);
 
-      console.log(changedData);
-
       if (Object.keys(changedData).length === 0) return;
 
       updateGroup(
@@ -79,14 +70,14 @@ function GroupForm({ isOpen, handleClose, groupToEdit }: CourseFormProps) {
         {
           onSuccess: () => {
             form.reset();
-            handleClose(false);
+            handleClose?.(false);
           },
         },
       );
     } else {
       addGroup(groupData);
       form.reset();
-      handleClose(false);
+      handleClose?.(false);
     }
   }
 

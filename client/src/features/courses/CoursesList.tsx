@@ -17,7 +17,7 @@ function CoursesList() {
   if (isLoading) return <Spinner />;
   if (!courses?.length) return <Empty resourceName="Курси" />;
   return (
-    <ul className="grid grid-cols-4 grid-rows-3">
+    <ul className="grid grid-cols-4 grid-rows-3 gap-y-5">
       {courses.map((course) => (
         <CourseCard key={course.id} course={course} />
       ))}

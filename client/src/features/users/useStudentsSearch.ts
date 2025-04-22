@@ -4,14 +4,14 @@ import { findStudents } from "../../lib/services/apiUsers";
 export function useStudentsSearch(searchStr: string) {
   const {
     isLoading,
-    totalItems: totalTeachers,
-    items: teachers,
-    error: teachersError,
+    totalItems: totalStudents,
+    items: students,
+    error: studentsError,
   } = useResourcesSearch({
     resourceName: "students",
     fetchFn: findStudents,
     searchStr,
   });
 
-  return { isLoading, totalTeachers, teachers, teachersError };
+  return { isLoading, totalStudents, students, studentsError };
 }

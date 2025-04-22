@@ -73,13 +73,10 @@ export const groupFormSchema = z.object({
   year_of_study: z
     .number()
     .int()
-    .min(1970, {
-      message: "Дата початку навчання не може бути ранішою за 1970 рік",
+    .min(1, {
+      message: "Рік навчання не може бути меншим за 1.",
     })
-    .max(
-      new Date().getFullYear() + 1,
-      `Дата початку навчання не може бути пізніша за ${new Date().getFullYear() + 1}`,
-    ),
+    .max(4, `Рік навчання не може бути більшим за 4.`),
 });
 
 export const groupUpdateSchemaPartial = groupFormSchema.partial();

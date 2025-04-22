@@ -47,16 +47,16 @@ export const getGroupById = (id: string) =>
   });
 
 export const updateGroupPatch = (
-  id: number,
   data: z.infer<typeof groupUpdateSchemaPartial>,
+  id: number,
 ) =>
   interactWithAPI<
-    typeof groupDetailedSchema,
+    typeof groupPlainSchema,
     z.infer<typeof groupUpdateSchemaPartial>
   >({
     url: `groups/${id}`,
     method: "patch",
-    schema: groupDetailedSchema,
+    schema: groupPlainSchema,
     data,
     methodErrorMessage: "Не вдалось оновити групу!",
     serverErrorRecourseName: "Group",
@@ -71,9 +71,9 @@ export const deleteGroup = (id: number) =>
     serverErrorRecourseName: "Group",
   });
 
-export const addStudentToGroup = (groupId: number, userId: number) =>
+export const addStudentToGroup = (groupId: number, studentId: number) =>
   interactWithAPI<typeof groupDetailedSchema, object>({
-    url: `groups/${groupId}/students/${userId}/`,
+    url: `groups/${groupId}/students/${studentId}/`,
     method: "post",
     schema: groupDetailedSchema,
     methodErrorMessage: "Не вдалось додати студента до групи!",
