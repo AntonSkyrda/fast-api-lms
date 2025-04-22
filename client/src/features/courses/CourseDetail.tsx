@@ -3,7 +3,7 @@ import Spinner from "../../ui/Spinner";
 import Empty from "../../ui/Empty";
 import Heading from "../../ui/Heading";
 import CourseDataBox from "./CourseDataBox";
-import { Button, buttonVariants } from "../../ui/Button";
+import { Button, buttonVariants } from "../../ui/button";
 import { Plus } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import toast from "react-hot-toast";

@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 
 interface IuseResource<T> {
   resourceName: string;
@@ -13,7 +13,8 @@ export function useResource<T>({
   paramName = "id",
 }: IuseResource<T>) {
   const params = useParams();
-  const resourceId = params[paramName];
+  const [searchParams] = useSearchParams();
+  const resourceId = params[paramName] || searchParams.get(paramName);
 
   const {
     isLoading,
