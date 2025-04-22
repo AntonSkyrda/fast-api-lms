@@ -28,9 +28,16 @@ router = APIRouter(prefix="/courses", tags=["Courses"])
 async def get_courses(
     limit: int = Query(10, ge=1),
     offset: int = Query(0, ge=0),
+    search: str | None = Query(None),
     session: AsyncSession = Depends(db_helper.session_getter),
 ):
-    total, courses = await course_crud.get_all(session, offset=offset, limit=limit)
+    total, courses = await course_crud.get_all(
+        session=session,
+        offset=offset,
+        limit=limit,
+        search=search,
+        search_fields=["name", "description"],
+    )
     return PaginationResponse(
         total=total,
         items=[CourseReadPlain.from_orm(course) for course in courses],
