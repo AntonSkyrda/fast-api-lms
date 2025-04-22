@@ -1,7 +1,7 @@
-from typing import Generic, TypeVar, Type
+from typing import Generic, TypeVar, Type, Sequence
 
 from fastapi import HTTPException
-from sqlalchemy import select, update, delete, func
+from sqlalchemy import select, update, delete, func, or_
 from sqlalchemy.orm import DeclarativeMeta
 from sqlalchemy.ext.asyncio import AsyncSession
 from pydantic import BaseModel
@@ -19,17 +19,28 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
     async def get_all(
         self,
         session: AsyncSession,
-        offset: int = 0,
         limit: int = 10,
-    ) -> tuple[int, list[ModelType]]:
-        total_result = await session.execute(
-            select(func.count()).select_from(self.model)
-        )
-        total = total_result.scalar_one()
+        offset: int = 0,
+        search: str | None = None,
+        search_fields: list[str] | None = None,
+    ) -> tuple[int, Sequence[ModelType]]:
+        stmt = select(self.model)
 
-        result = await session.execute(select(self.model).offset(offset).limit(limit))
+        if search and search_fields:
+            filters = []
+            for field_name in search_fields:
+                field = getattr(self.model, field_name, None)
+                if field is not None:
+                    filters.append(field.ilike(f"%{search}%"))
+            if filters:
+                stmt = stmt.where(or_(*filters))
 
-        return total, list(result.scalars().all())
+        total = await session.scalar(select(func.count()).select_from(stmt.subquery()))
+
+        result = await session.execute(stmt.offset(offset).limit(limit))
+        items = result.scalars().all()
+
+        return total or 0, items
 
     async def create(
         self, session: AsyncSession, object_in: CreateSchemaType

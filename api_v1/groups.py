@@ -26,9 +26,16 @@ router = APIRouter(prefix="/groups", tags=["Groups"])
 async def get_groups(
     limit: int = Query(10, ge=1),
     offset: int = Query(0, ge=0),
+    search: str | None = Query(None),
     session: AsyncSession = Depends(db_helper.session_getter),
 ):
-    total, groups = await group_crud.get_all(session, offset=offset, limit=limit)
+    total, groups = await group_crud.get_all(
+        session=session,
+        offset=offset,
+        limit=limit,
+        search=search,
+        search_fields=["name"],
+    )
     return PaginationResponse(
         total=total,
         items=[GroupReadPlain.from_orm(group) for group in groups],
