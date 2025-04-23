@@ -12,7 +12,6 @@ import {
 import { useCourse } from "./useCourse";
 import toast from "react-hot-toast";
 import { Plus } from "lucide-react";
-import { useTeachersSearch } from "../users/useTeachersSearch";
 import { useCallback, useEffect, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import TeachersSearch from "../users/TeachersSearch";
@@ -21,13 +20,9 @@ function AddTeacherToCourse() {
   const queryClient = useQueryClient();
   const { user } = useAuth();
   const { course } = useCourse();
-  const { addTeacherToCourse, isPending } = useAddTeacherToCourse();
   const [isOpen, setIsOpen] = useState(false);
-
   const [searchStr, setSearchStr] = useState("");
-  const teachersData = useTeachersSearch(searchStr);
-
-  const isLoading = isPending || teachersData.isLoading;
+  const { addTeacherToCourse, isPending } = useAddTeacherToCourse();
 
   const clear = useCallback(
     function () {
@@ -78,8 +73,7 @@ function AddTeacherToCourse() {
           searchStr={searchStr}
           handleSearch={setSearchStr}
           handleSubmit={handleSubmit}
-          isLoading={isLoading}
-          teachersData={teachersData}
+          isLoading={isPending}
         />
       </DialogContent>
     </Dialog>

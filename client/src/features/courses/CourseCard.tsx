@@ -22,16 +22,16 @@ interface CourseCardProps {
 
 function CourseCard({ course }: CourseCardProps) {
   return (
-    <Card className="w-[24rem]">
+    <Card className="min-h-[12rem]">
       <CardHeader>
-        <CardTitle>{course.name}</CardTitle>
+        <CardTitle className="truncate">{course.name}</CardTitle>
         <CardDescription>Мій курс</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        <p>{course.description}</p>
+        <p className="truncate">{course.description}</p>
       </CardContent>
 
-      <CardFooter className="flex flex-row items-center justify-between">
+      <CardFooter className="mt-auto flex flex-row items-center justify-between">
         <NavLink
           to={`${course.id}`}
           className={buttonVariants({ variant: "secondary" })}

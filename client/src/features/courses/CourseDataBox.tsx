@@ -39,7 +39,7 @@ function CourseDataBox({ course }: CourseDataBoxProps) {
           <p>{course.description}</p>
         </div>
 
-        <CourseGroups groups={course.groups} />
+        <CourseGroups groupsFromCourse={course.groups} />
 
         <div className="flex flex-row items-baseline gap-8">
           <Heading as="h4">Програма:</Heading>
