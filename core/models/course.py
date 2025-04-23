@@ -8,9 +8,10 @@ from .base import BaseModel
 from .course_group_association import course_group_association_table
 
 if TYPE_CHECKING:
-    from .group import Group
-    from .user import User
-    from .course_program import CourseProgram
+    from core.models import Group
+    from core.models import User
+    from core.models import CourseProgram
+    from core.models import Lesson
 
 
 class Course(IdIntPkMixin, BaseModel):
@@ -30,3 +31,4 @@ class Course(IdIntPkMixin, BaseModel):
         back_populates="course",
         cascade="all, delete-orphan",
     )
+    lessons: Mapped[list["Lesson"]] = relationship("Lesson", back_populates="course")

@@ -8,6 +8,7 @@ from core.models.mixins.id_int_pk import IdIntPkMixin
 
 if TYPE_CHECKING:
     from core.models import Course
+    from core.models import Lesson
 
 
 class CourseProgram(IdIntPkMixin, BaseModel):
@@ -17,3 +18,7 @@ class CourseProgram(IdIntPkMixin, BaseModel):
     course_id: Mapped[int] = mapped_column(ForeignKey("course.id"))
 
     course: Mapped["Course"] = relationship("Course", back_populates="programs")
+    lessons: Mapped[list["Lesson"]] = relationship(
+        back_populates="program",
+        cascade="all, delete-orphan",
+    )
