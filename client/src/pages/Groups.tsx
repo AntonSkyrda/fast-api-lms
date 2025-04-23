@@ -26,7 +26,7 @@ function Groups() {
       <PageHeader title="Групи">
         <AddGroup />
       </PageHeader>
-      <div className="grid grid-cols-2 gap-18">
+      <div className="grid grid-cols-[1fr_3fr] gap-18">
         <section>
           <GroupsList
             activeGroup={activeGroup}
