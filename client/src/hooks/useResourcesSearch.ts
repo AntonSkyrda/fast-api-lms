@@ -11,7 +11,7 @@ export function useResourcesSearch<T>({
   resourceName,
   fetchFn,
   searchStr,
-  minLength = 3,
+  minLength = 0,
 }: IuseResourceSearch<T>) {
   const {
     isLoading,

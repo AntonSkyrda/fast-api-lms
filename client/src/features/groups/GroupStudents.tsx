@@ -8,7 +8,7 @@ import { useRemoveStudentFromGroup } from "./useRemoveStudentFromGroup";
 import { NavLink } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useQueryClient } from "@tanstack/react-query";
-import StudentsSearch from "./StudentsSearch";
+import StudentsSearch from "../users/StudentsSearch";
 
 interface GroupStudentsProps {
   group: z.infer<typeof groupDetailedSchema>;

@@ -1,7 +1,5 @@
-import { useMemo } from "react";
 import { useTeachersSearch } from "./useTeachersSearch";
 import SearchBar from "../../ui/SearchBar";
-import { useTeachers } from "./useTeachers";
 
 interface TeacherSearchProps {
   searchStr: string;
@@ -16,15 +14,10 @@ export function TeachersSearch({
   isLoading,
   handleSubmit,
 }: TeacherSearchProps) {
-  const { teachers, isLoading: isLoadingTeachers } = useTeachers();
-  const teachersData = useTeachersSearch(searchStr);
+  const { teachers, isLoading: isLoadingTeachers } =
+    useTeachersSearch(searchStr);
 
-  const teachersToRender = useMemo(() => {
-    if (searchStr.length <= 1) return teachers;
-    return teachersData.teachers.length > 0 ? teachersData.teachers : [];
-  }, [searchStr, teachers, teachersData.teachers]);
-
-  const isWorking = isLoading || teachersData.isLoading || isLoadingTeachers;
+  const isWorking = isLoading || isLoadingTeachers;
 
   return (
     <SearchBar
@@ -36,7 +29,7 @@ export function TeachersSearch({
       <SearchBar.Input placeholder="Пошук викладача" />
       <SearchBar.Content>
         <SearchBar.List>
-          {teachersToRender.map((teacher) => (
+          {teachers.map((teacher) => (
             <SearchBar.Result
               key={teacher.id}
               handleSelect={() => handleSubmit(teacher.id)}

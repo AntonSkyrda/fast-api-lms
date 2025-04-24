@@ -1,4 +1,3 @@
-import { z } from "zod";
 import {
   Card,
   CardContent,
@@ -12,12 +11,10 @@ import { NavLink } from "react-router-dom";
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
 import CourseCardActions from "./CourseCardActions";
 import { EllipsisVertical } from "lucide-react";
-import { coursePlainSchema } from "../../schemas/plainShemas";
-
-type Course = z.infer<typeof coursePlainSchema>;
+import { CoursePlain } from "../../types/dataTypes";
 
 interface CourseCardProps {
-  course: Course;
+  course: CoursePlain;
 }
 
 function CourseCard({ course }: CourseCardProps) {

@@ -16,13 +16,13 @@ import { useAddCourse } from "./useAddCourse";
 import Spinner from "../../ui/Spinner";
 import { useUpdateCourse } from "./useUpdateCourse";
 import { useEffect } from "react";
-import { coursePlainSchema } from "../../schemas/plainShemas";
 import { getChangedFields } from "../../lib/utils/getChangedFields";
+import { CoursePlain } from "../../types/dataTypes";
 
 interface CourseFormProps {
   isOpen?: boolean;
   handleClose?: (isOpen: boolean) => void;
-  courseToEdit?: z.infer<typeof coursePlainSchema>;
+  courseToEdit?: CoursePlain;
 }
 function CurseForm({ isOpen, handleClose, courseToEdit }: CourseFormProps) {
   const { id: editId, ...editValues } = courseToEdit ?? {};

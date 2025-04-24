@@ -1,5 +1,4 @@
-import { useMemo, useState } from "react";
-import { useCourses } from "./useCourses";
+import { useState } from "react";
 import { useCoursesSearch } from "./useCoursesSearch";
 import SearchBar from "../../ui/SearchBar";
 import { useNavigate } from "react-router-dom";
@@ -7,22 +6,12 @@ import { useNavigate } from "react-router-dom";
 function CoursesSearch() {
   const navigate = useNavigate();
   const [searchStr, setSearchStr] = useState("");
-  const { courses, isLoading } = useCourses();
-  const coursesSearchData = useCoursesSearch(searchStr);
-
-  const coursesToRender = useMemo(() => {
-    if (searchStr.length <= 1) return courses;
-    return coursesSearchData.courses.length > 0
-      ? coursesSearchData.courses
-      : [];
-  }, [searchStr, courses, coursesSearchData.courses]);
-
-  const isWorking = isLoading || coursesSearchData.isLoading;
+  const { courses, isLoading } = useCoursesSearch(searchStr);
 
   return (
     <SearchBar
       value={searchStr}
-      isLoading={isWorking}
+      isLoading={isLoading}
       onValueChange={setSearchStr}
     >
       <SearchBar.Input placeholder="Пошук курсів" />
@@ -30,7 +19,7 @@ function CoursesSearch() {
         <SearchBar.List
           emptyMessage={`За запитом ${searchStr} Не знайдено жодного курсу`}
         >
-          {coursesToRender.map((course) => (
+          {courses.map((course) => (
             <SearchBar.Result
               key={course.id}
               className="cursor-pointer"
