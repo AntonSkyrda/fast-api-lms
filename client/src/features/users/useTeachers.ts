@@ -10,7 +10,6 @@ export function useTeachers() {
   } = useResources({
     resourceName: "teachers",
     fetchFn: getTeachers,
-    enableCondition: "teachers",
   });
 
   return { isLoading, totalTeachers, teachers, teachersError };

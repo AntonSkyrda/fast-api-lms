@@ -10,14 +10,9 @@ import {
 } from "../../ui/dialog";
 import CurseForm from "./CurseForm";
 import { Pencil } from "lucide-react";
-import { z } from "zod";
-import { coursePlainSchema } from "../../schemas/plainShemas";
+import { CoursePlain } from "../../types/dataTypes";
 
-function UpdateCourse({
-  course,
-}: {
-  course: z.infer<typeof coursePlainSchema>;
-}) {
+function UpdateCourse({ course }: { course: CoursePlain }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (

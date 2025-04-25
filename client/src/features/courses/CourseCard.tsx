@@ -1,4 +1,3 @@
-import { z } from "zod";
 import {
   Card,
   CardContent,
@@ -12,26 +11,24 @@ import { NavLink } from "react-router-dom";
 import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
 import CourseCardActions from "./CourseCardActions";
 import { EllipsisVertical } from "lucide-react";
-import { coursePlainSchema } from "../../schemas/plainShemas";
-
-type Course = z.infer<typeof coursePlainSchema>;
+import { CoursePlain } from "../../types/dataTypes";
 
 interface CourseCardProps {
-  course: Course;
+  course: CoursePlain;
 }
 
 function CourseCard({ course }: CourseCardProps) {
   return (
-    <Card className="w-[24rem]">
+    <Card className="min-h-[12rem]">
       <CardHeader>
-        <CardTitle>{course.name}</CardTitle>
+        <CardTitle className="truncate">{course.name}</CardTitle>
         <CardDescription>Мій курс</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        <p>{course.description}</p>
+        <p className="truncate">{course.description}</p>
       </CardContent>
 
-      <CardFooter className="flex flex-row items-center justify-between">
+      <CardFooter className="mt-auto flex flex-row items-center justify-between">
         <NavLink
           to={`${course.id}`}
           className={buttonVariants({ variant: "secondary" })}

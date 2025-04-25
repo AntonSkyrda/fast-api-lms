@@ -1,14 +1,9 @@
-import { z } from "zod";
 import { useAuth } from "../../contexts/Auth/useAuth";
 import DeleteRecourceButton from "../../ui/DeleteRecourceButton";
-import { groupDetailedSchema } from "../../schemas/groupsSchema";
 import { useDeleteGroup } from "./useDeleteGroup";
+import { GroupDetailed } from "../../types/dataTypes";
 
-function DeleteGroup({
-  group,
-}: {
-  group: z.infer<typeof groupDetailedSchema>;
-}) {
+function DeleteGroup({ group }: { group: GroupDetailed }) {
   const { deleteGroup, isPending } = useDeleteGroup();
   const { user } = useAuth();
 

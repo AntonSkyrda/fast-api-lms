@@ -16,13 +16,13 @@ import { useAddGroup } from "./useAddGroup";
 import Spinner from "../../ui/Spinner";
 import { useUpdateGroup } from "./useUpdateGroup";
 import { useEffect } from "react";
-import { groupPlainSchema } from "../../schemas/plainShemas";
 import { getChangedFields } from "../../lib/utils/getChangedFields";
+import { GroupPlain } from "../../types/dataTypes";
 
 interface CourseFormProps {
   isOpen?: boolean;
   handleClose?: (isOpen: boolean) => void;
-  groupToEdit?: z.infer<typeof groupPlainSchema>;
+  groupToEdit?: GroupPlain;
 }
 function GroupForm({ isOpen, handleClose, groupToEdit }: CourseFormProps) {
   const { id: editId, ...editValues } = groupToEdit ?? {};

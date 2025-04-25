@@ -1,17 +1,9 @@
-import { z } from "zod";
 import { useAuth } from "../../contexts/Auth/useAuth";
 import DeleteRecourceButton from "../../ui/DeleteRecourceButton";
 import { useDeleteCourse } from "./useDeleteCourse";
-import { courseDetailedSchema } from "../../schemas/coursesSchema";
-import { coursePlainSchema } from "../../schemas/plainShemas";
+import { CourseDetailed, CoursePlain } from "../../types/dataTypes";
 
-function DeleteGroup({
-  course,
-}: {
-  course:
-    | z.infer<typeof courseDetailedSchema>
-    | z.infer<typeof coursePlainSchema>;
-}) {
+function DeleteGroup({ course }: { course: CoursePlain | CourseDetailed }) {
   const { deleteCourse, isPending } = useDeleteCourse();
   const { user } = useAuth();
 

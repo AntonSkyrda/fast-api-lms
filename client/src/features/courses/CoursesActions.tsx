@@ -1,10 +1,11 @@
 import { Button } from "../../ui/button";
 import AddCourse from "./AddCourse";
+import CoursesSearch from "./CoursesSearch";
 
 function CoursesActions() {
   return (
     <div className="flex flex-row items-center gap-5">
-      <span>Пошук</span>
+      <CoursesSearch />
       <Button variant="outline">Сортувати</Button>
       <AddCourse />
     </div>

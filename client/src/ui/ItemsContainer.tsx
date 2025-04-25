@@ -1,4 +1,11 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import React, {
+  cloneElement,
+  isValidElement,
+  ReactElement,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cn } from "../lib/utils/cn";
 import {
@@ -10,21 +17,8 @@ import {
 } from "./dialog";
 import { Plus, X } from "lucide-react";
 import { Button } from "./button";
-
-type ItemsContextType = {
-  isDialogOpen: boolean;
-  setIsDialogOpen: (isOpen: boolean) => void;
-};
-
-const ItemsContext = createContext<ItemsContextType | null>(null);
-
-function useItemsContainer() {
-  const context = useContext(ItemsContext);
-  if (!context) {
-    throw new Error("useItemsContainer must be used within ItemsProvider");
-  }
-  return context;
-}
+import { ItemsContainerContext } from "../contexts/ItemsContainer/ItemsContainerContext";
+import { useItemsContainer } from "../contexts/ItemsContainer/ItemsContainerProvider";
 
 interface ItemsContainerProps {
   children: React.ReactNode;
@@ -38,7 +32,7 @@ function ItemsContainer({
 }: ItemsContainerProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const contextValue: ItemsContextType = useMemo(
+  const contextValue = useMemo(
     () => ({
       isDialogOpen,
       setIsDialogOpen,
@@ -47,7 +41,7 @@ function ItemsContainer({
   );
 
   return (
-    <ItemsContext.Provider value={contextValue}>
+    <ItemsContainerContext.Provider value={contextValue}>
       <div
         className={cn(
           "border-border bg-card overflow-hidden rounded-lg border shadow-sm",
@@ -57,7 +51,7 @@ function ItemsContainer({
       >
         {children}
       </div>
-    </ItemsContext.Provider>
+    </ItemsContainerContext.Provider>
   );
 }
 
@@ -233,6 +227,11 @@ interface ItemsDialogProps {
   handleClear?: () => void;
 }
 
+interface DialogControlProps {
+  isOpen: boolean;
+  handleClose: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 function ItemsDialog({
   className,
   title = "Додавання елементу",
@@ -243,6 +242,18 @@ function ItemsDialog({
   ...props
 }: ItemsDialogProps) {
   const { isDialogOpen, setIsDialogOpen } = useItemsContainer();
+
+  const closeDialog = () => setIsDialogOpen(false);
+
+  const childrenWithProps = React.Children.map(children, (child) => {
+    if (isValidElement(child)) {
+      return cloneElement(child as ReactElement<DialogControlProps>, {
+        isOpen: isDialogOpen,
+        handleClose: closeDialog,
+      });
+    }
+    return child;
+  });
 
   useEffect(
     function () {
@@ -260,8 +271,8 @@ function ItemsDialog({
         </DialogHeader>
         <div className="space-y-4">
           {children ? (
-            <div className="flex max-h-64 flex-col gap-6 overflow-y-auto pr-2">
-              {children}
+            <div className="flex max-h-64 flex-col gap-6 overflow-y-auto px-2">
+              {childrenWithProps}
             </div>
           ) : (
             <div className="flex items-center justify-center rounded-md border border-dashed p-8">
@@ -292,6 +303,9 @@ function AvailableItem({
 
   const { setIsDialogOpen } = useItemsContainer();
 
+  const styles =
+    "bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 inline-flex h-12 w-full items-center justify-between rounded-md border px-4 py-2 text-sm font-medium whitespace-nowrap shadow-xs transition-all disabled:pointer-events-none disabled:opacity-50";
+
   function hadnleAddItem() {
     onAddItem();
     setIsDialogOpen(false);
@@ -299,10 +313,7 @@ function AvailableItem({
 
   return (
     <Comp
-      className={cn(
-        "bg-background hover:bg-accent hover:text-accent-foreground dark:bg-input/30 dark:border-input dark:hover:bg-input/50 inline-flex h-12 w-full items-center justify-between rounded-md border px-4 py-2 text-sm font-medium whitespace-nowrap shadow-xs transition-all disabled:pointer-events-none disabled:opacity-50",
-        className,
-      )}
+      className={cn(styles, className)}
       data-slot="items-available-item"
       {...props}
     >

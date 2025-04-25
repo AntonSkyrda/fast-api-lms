@@ -1,16 +1,11 @@
 import { Calendar } from "lucide-react";
 import { Button } from "../../ui/button";
-import { z } from "zod";
-import { coursePlainSchema } from "../../schemas/plainShemas";
 import { useAuth } from "../../contexts/Auth/useAuth";
 import UpdateCourse from "./UpdateCourse";
 import DeleteCourse from "./DeleteCourse";
+import { CoursePlain } from "../../types/dataTypes";
 
-function CourseCardActions({
-  course,
-}: {
-  course: z.infer<typeof coursePlainSchema>;
-}) {
+function CourseCardActions({ course }: { course: CoursePlain }) {
   const { user } = useAuth();
 
   return (

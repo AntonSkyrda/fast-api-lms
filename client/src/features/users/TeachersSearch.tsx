@@ -1,63 +1,45 @@
-import { z } from "zod";
-import { cn } from "../../lib/utils/cn";
-import { teacherArraySchema } from "../../schemas/usersSchema";
-import { Button, buttonVariants } from "../../ui/button";
-import Search from "../../ui/Search";
-import SearchResults from "../../ui/SearchResults";
+import { useTeachersSearch } from "./useTeachersSearch";
+import SearchBar from "../../ui/SearchBar";
 
-interface ITeacherSearch {
+interface TeacherSearchProps {
   searchStr: string;
   handleSearch: (value: string) => void;
   isLoading: boolean;
-  teachersData: {
-    total?: number;
-    teachers?: z.infer<typeof teacherArraySchema>;
-  };
   handleSubmit: (teacherId: number) => void;
 }
 
 export function TeachersSearch({
-  searchStr,
   handleSearch,
+  searchStr,
   isLoading,
-  teachersData,
   handleSubmit,
-}: ITeacherSearch) {
+}: TeacherSearchProps) {
+  const { teachers, isLoading: isLoadingTeachers } =
+    useTeachersSearch(searchStr);
+
+  const isWorking = isLoading || isLoadingTeachers;
+
   return (
-    <div className="space-y-8">
-      <Search
-        searchStr={searchStr}
-        onSearchChange={handleSearch}
-        isLoading={isLoading}
-      />
-      <SearchResults
-        searchStr={searchStr}
-        isLoading={isLoading}
-        resultsLength={teachersData.teachers?.length}
-        recourseName="Викладачів"
-      >
-        {teachersData.teachers?.map((teacher) => (
-          <li
-            key={teacher.id}
-            className={cn(
-              buttonVariants({ variant: "outline" }),
-              "flex flex-row items-center justify-between py-4",
-            )}
-          >
-            <p>
-              {teacher.last_name} {teacher.first_name} {teacher.father_name}
-            </p>
-            <Button
-              onClick={() => handleSubmit(teacher.id)}
-              disabled={isLoading}
-              variant="secondary"
+    <SearchBar
+      value={searchStr}
+      onValueChange={handleSearch}
+      isModal={true}
+      isLoading={isWorking}
+    >
+      <SearchBar.Input placeholder="Пошук викладача" />
+      <SearchBar.Content>
+        <SearchBar.List>
+          {teachers.map((teacher) => (
+            <SearchBar.Result
+              key={teacher.id}
+              handleSelect={() => handleSubmit(teacher.id)}
             >
-              Додати
-            </Button>
-          </li>
-        ))}
-      </SearchResults>
-    </div>
+              {teacher.last_name} {teacher.first_name} {teacher.father_name}
+            </SearchBar.Result>
+          ))}
+        </SearchBar.List>
+      </SearchBar.Content>
+    </SearchBar>
   );
 }
 

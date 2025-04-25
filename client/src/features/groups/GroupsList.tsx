@@ -18,7 +18,7 @@ interface GroupsListProps {
 
 function GroupsList({ activeGroup, handleActiveGroup }: GroupsListProps) {
   const { groups, isLoading } = useGroups();
-  if (!groups) return <Empty resourceName="Груп" />;
+  if (groups.length < 1) return <Empty resourceName="Груп" />;
 
   if (isLoading) return <Spinner />;
 

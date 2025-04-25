@@ -97,7 +97,7 @@ export const getStudents = (offset: number = 0) =>
 
 export const findStudents = (searchStr: string = "") =>
   interactWithAPI<typeof studentsSchema, object>({
-    url: `students?search=${searchStr}`,
+    url: `students?limit=${ITEMS_PER_PAGE}&search=${searchStr}`,
     method: "get",
     schema: studentsSchema,
     methodErrorMessage: "Сталася помилка при отримані даних студентів.",
