@@ -2,6 +2,7 @@ import Heading from "../../ui/Heading";
 import { useAuth } from "../../contexts/Auth/useAuth";
 import CourseGroups from "./CourseGroups";
 import { CourseDetailed } from "../../types/dataTypes";
+import CourseProgramsList from "../coursePrograms/CourseProgramsList";
 
 interface CourseDataBoxProps {
   course: CourseDetailed;
@@ -42,8 +43,7 @@ function CourseDataBox({ course }: CourseDataBoxProps) {
 
         <div className="flex flex-row items-baseline gap-8">
           <Heading as="h4">Програма:</Heading>
-          {/* <p>Тут ще немає тем</p> */}
-          <button>додати тему</button>
+          <CourseProgramsList course={course} />
         </div>
       </section>
       <footer className="bg-goldenrod-200 gap-5 px-16 py-7 text-right"></footer>

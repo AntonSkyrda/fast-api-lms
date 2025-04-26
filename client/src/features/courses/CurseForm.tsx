@@ -13,11 +13,11 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../../ui/input";
 import { Button } from "../../ui/button";
 import { useAddCourse } from "./useAddCourse";
-import Spinner from "../../ui/Spinner";
 import { useUpdateCourse } from "./useUpdateCourse";
 import { useEffect } from "react";
 import { getChangedFields } from "../../lib/utils/getChangedFields";
 import { CoursePlain } from "../../types/dataTypes";
+import SpinnerMini from "../../ui/SpinnerMini";
 
 interface CourseFormProps {
   isOpen?: boolean;
@@ -118,7 +118,7 @@ function CurseForm({ isOpen, handleClose, courseToEdit }: CourseFormProps) {
           <Button variant="default" type="submit" disabled={isLoading}>
             <span>
               {isLoading ? (
-                <Spinner />
+                <SpinnerMini />
               ) : isEditSession ? (
                 "Редагувати"
               ) : (

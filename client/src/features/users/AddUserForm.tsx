@@ -167,6 +167,7 @@ function AddUserForm({
                   />
                 </FormControl>
                 <FormLabel htmlFor="is_student">Студент</FormLabel>
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -216,7 +217,15 @@ function AddUserForm({
             )}
           /> */}
         </fieldset>
-        <div className="row-span-2">
+        <div className="row-span-2 space-y-3">
+          <FormField
+            name="role"
+            render={() => (
+              <FormItem>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
           <Button variant="default" type="submit">
             <span>{isLoading ? <Spinner /> : "Створити"}</span>
           </Button>

@@ -13,6 +13,14 @@ export const groupPlainSchema = z.object({
   year_of_study: z.number().int(),
 });
 
+export const programPlainSchema = z.object({
+  title: z.string(),
+  order: z.number().int(),
+  count_hours: z.number(),
+  course_id: z.number().int(),
+  id: z.number().int(),
+});
+
 // Defoult user scheme
 export const userSchema = z.object({
   id: z.number().int(),

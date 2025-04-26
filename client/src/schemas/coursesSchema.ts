@@ -1,6 +1,10 @@
 import { z } from "zod";
 import { teacherSchema } from "./usersSchema";
-import { coursePlainSchema, groupPlainSchema } from "./plainShemas";
+import {
+  coursePlainSchema,
+  groupPlainSchema,
+  programPlainSchema,
+} from "./plainShemas";
 import { backendResponseForListsSchema } from "./backendResponseForListsSchema";
 
 export const coursePlainPartialSchema = coursePlainSchema.partial();
@@ -16,4 +20,5 @@ export const coursesSchema = backendResponseForListsSchema.extend({
 export const courseDetailedSchema = coursePlainSchema.extend({
   teacher: z.union([teacherSchema, z.null()]),
   groups: z.union([z.array(groupPlainSchema), z.tuple([])]),
+  programs: z.union([z.array(programPlainSchema), z.tuple([])]),
 });

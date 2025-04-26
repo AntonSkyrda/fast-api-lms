@@ -170,6 +170,7 @@ function AccountForm() {
                       />
                     </FormControl>
                     <FormLabel>Студент</FormLabel>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -184,6 +185,16 @@ function AccountForm() {
                       />
                     </FormControl>
                     <FormLabel>Викладач</FormLabel>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                name="role"
+                render={() => (
+                  <FormItem>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
