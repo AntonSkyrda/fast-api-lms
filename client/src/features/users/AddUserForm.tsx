@@ -7,24 +7,24 @@ import {
   FormLabel,
   FormMessage,
 } from "../../ui/form";
-import { userSchema } from "../../schemas/userSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "../../ui/Input";
+import { Input } from "../../ui/input";
 
 import { z } from "zod";
 import { Checkbox } from "../../ui/checkbox";
-import { Button } from "../../ui/Button";
+import { Button } from "../../ui/button";
 import { useAddUser } from "./useAddUser";
 import Spinner from "../../ui/Spinner";
 // import { useEffect } from "react";
+import { userAddFormSchema } from "../../schemas/formsSchemas";
 
 function AddUserForm({
   handleClose,
 }: {
   handleClose: (isOpen: boolean) => void;
 }) {
-  const form = useForm<z.infer<typeof userSchema>>({
-    resolver: zodResolver(userSchema),
+  const form = useForm<z.infer<typeof userAddFormSchema>>({
+    resolver: zodResolver(userAddFormSchema),
     defaultValues: {
       email: "",
       password: "",
@@ -33,9 +33,6 @@ function AddUserForm({
       father_name: "",
       is_teacher: false,
       is_student: false,
-      is_superuser: false,
-      is_active: true,
-      is_verified: false,
     },
   });
 
@@ -49,7 +46,7 @@ function AddUserForm({
   const { addUser, isPending: isLoading } = useAddUser();
 
   function onSubmit(data: FieldValues) {
-    const { success, data: userData } = userSchema.safeParse(data);
+    const { success, data: userData } = userAddFormSchema.safeParse(data);
     if (!success) return;
     addUser(userData);
     handleClose(false);

@@ -1,136 +1,98 @@
 from fastapi import HTTPException
-from sqlalchemy import select, update, delete
-from sqlalchemy.orm import selectinload
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.orm import selectinload
 
-from core.models import Course, Group, User
-from core.schemas.courses import CourseCreate, CourseUpdate, CourseUpdatePartial
+from core.crud.base import CRUDBase
+from core.models.course import Course
+from core.models.user import User
+from core.models.group import Group
+from core.schemas.courses import CourseCreate, CourseUpdate
 
 
-async def get_course(session: AsyncSession, course_id: int) -> Course | None:
+course_crud = CRUDBase[Course, CourseCreate, CourseUpdate](Course)
+
+
+async def get_course_by_id(session: AsyncSession, course_id: int) -> Course | None:
     result = await session.execute(
         select(Course)
-        .options(selectinload(Course.teacher), selectinload(Course.groups))
+        .options(
+            selectinload(Course.teacher),
+            selectinload(Course.groups),
+            selectinload(Course.programs),
+        )
         .where(Course.id == course_id)
     )
     return result.scalar_one_or_none()
 
 
-async def get_courses(session: AsyncSession) -> list[Course]:
-    result = await session.execute(select(Course).order_by(Course.id))
-    return list(result.scalars().all())
-
-
-async def create_course(session: AsyncSession, course_in: CourseCreate) -> Course:
-    course = Course(**course_in.model_dump())
-    session.add(course)
-    await session.commit()
-    await session.refresh(course)
-
-    result = await session.execute(
-        select(Course)
-        .options(selectinload(Course.groups))
-        .where(Course.id == course.id)
-    )
-
-    return result.scalar_one()
-
-
-async def update_course(
-    session: AsyncSession,
-    course_id: int,
-    course_in: CourseUpdate | CourseUpdatePartial,
-    partial: bool = True,
-) -> Course:
-    values = course_in.dict(exclude_unset=partial)
-    if not values:
-        raise HTTPException(
-            status_code=400,
-            detail=(
-                "No fields provided for update"
-                if partial
-                else "PUT request must contain all fields"
-            ),
-        )
-
-    stmt = (
-        update(Course)
-        .where(Course.id == course_id)
-        .values(**values)
-        .execution_options(synchronize_session="fetch")
-    )
-
-    await session.execute(stmt)
-    await session.commit()
-
-    result = await session.execute(select(Course).where(Course.id == course_id))
-    return result.scalar_one()
-
-
-async def delete_course(session: AsyncSession, course_id: int) -> Course | None:
-    result = await session.execute(select(Course).where(Course.id == course_id))
-    course = result.scalar_one_or_none()
-
-    if course is None:
-        return None
-
-    stmt = delete(Course).where(Course.id == course_id)
-    await session.execute(stmt)
-    await session.commit()
-    return course
-
-
 async def add_group_to_course(
-    session: AsyncSession, course: Course, group: Group
+    session: AsyncSession,
+    course: Course,
+    group: Group,
 ) -> Course:
     if group not in course.groups:
         course.groups.append(group)
+        session.add(course)
         await session.commit()
         await session.refresh(course)
     return course
 
 
-async def add_teacher_to_course(
-    session: AsyncSession, course_id: int, teacher_id: int
-) -> Course | None:
-    course = await session.get(Course, course_id)
-    teacher = await session.get(User, teacher_id)
+async def remove_group_from_course(
+    session: AsyncSession,
+    course: Course,
+    group: Group,
+) -> Course:
+    if group not in course.groups:
+        raise HTTPException(
+            status_code=400, detail="Group is not assigned to this course"
+        )
 
-    if not course or not teacher or not teacher.is_teacher:
+    course.groups.remove(group)
+    await session.commit()
+    await session.refresh(course)
+    return course
+
+
+async def assign_teacher_to_course(
+    session: AsyncSession,
+    course_id: int,
+    teacher_id: int,
+) -> Course | None:
+    course = await get_course_by_id(session, course_id)
+    if not course:
         return None
 
-    course.teacher_id = teacher.id
-    await session.commit()
+    teacher = await session.get(User, teacher_id)
+    if not teacher or not teacher.is_teacher:
+        return None
 
-    result = await session.execute(
-        select(Course)
-        .options(
-            selectinload(Course.teacher),
-            selectinload(Course.groups),
-        )
-        .where(Course.id == course_id)
-    )
-    return result.scalar_one_or_none()
+    course.teacher = teacher
+    session.add(course)
+    await session.commit()
+    await session.refresh(course)
+    return course
 
 
 async def remove_teacher_from_course(
-    session: AsyncSession, course_id: int
+    session: AsyncSession,
+    course_id: int,
 ) -> Course | None:
-    result = await session.execute(
-        select(Course)
-        .options(
-            selectinload(Course.teacher),
-            selectinload(Course.groups),
-        )
-        .where(Course.id == course_id)
-    )
-
-    course = result.scalar_one_or_none()
+    course = await session.get(Course, course_id)
     if not course:
         return None
 
     course.teacher_id = None
     await session.commit()
-    await session.refresh(course)
 
-    return course
+    result = await session.execute(
+        select(Course)
+        .options(
+            selectinload(Course.groups),
+            selectinload(Course.teacher),
+            selectinload(Course.programs),
+        )
+        .where(Course.id == course_id)
+    )
+    return result.scalar_one_or_none()

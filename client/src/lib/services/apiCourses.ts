@@ -1,173 +1,117 @@
-import axios from "axios";
-
-import { courseSimpleSchema, coursesSchema } from "../../schemas/coursesSchema";
-import { getToken } from "../utils/manageCookie";
+import {
+  courseDetailedSchema,
+  coursePlainPartialSchema,
+  coursesSchema,
+} from "../../schemas/coursesSchema";
 import { z } from "zod";
+import {
+  courseFormSchema,
+  courseUpdateSchemaPartial,
+} from "../../schemas/formsSchemas";
+import { coursePlainSchema } from "../../schemas/plainShemas";
+import { ITEMS_PER_PAGE } from "../consts";
+import interactWithAPI from "./apiBase";
 
-export async function getCourses() {
-  const token = getToken();
-  if (!token) throw new Error("Ви не авторизовані!");
+export const getCourses = (offset: number = 0) =>
+  interactWithAPI<typeof coursesSchema, object>({
+    url: `courses?limit=${ITEMS_PER_PAGE}&offset=${offset * ITEMS_PER_PAGE}`,
+    method: "get",
+    schema: coursesSchema,
+    methodErrorMessage: "Сталася помилка при отриманні курсів.",
+    serverErrorRecourseName: "Courses",
+  });
 
-  const res = await axios
-    .get(`${import.meta.env.VITE_BASE_URL}/api/v1/courses`, {
-      headers: {
-        accept: "application/json",
-        Authorization: `${token?.token_type} ${token?.access_token}`,
-      },
-      withCredentials: true,
-    })
-    .catch(() => {
-      throw new Error("Сталася помилка при отриманні курсів.");
-    });
+export const findCourses = (searchStr: string = "") =>
+  interactWithAPI<typeof coursesSchema, object>({
+    url: `courses?search=${searchStr}`,
+    method: "get",
+    schema: coursesSchema,
+    methodErrorMessage: "Сталася помилка при отриманні курсів.",
+    serverErrorRecourseName: "Courses",
+  });
 
-  const { success, data: courses } = await coursesSchema.safeParseAsync(
-    res.data,
-  );
-  if (!success) throw new Error("There is Error with loading Courses data");
-  return courses;
-}
+export const getCourseById = (id: string) =>
+  interactWithAPI<typeof courseDetailedSchema, object>({
+    url: `courses/${id}/`,
+    method: "get",
+    schema: courseDetailedSchema,
+    methodErrorMessage: "Такого курсу не існує!",
+    serverErrorRecourseName: "Course",
+  });
 
-export async function getCourseById(id: string) {
-  const token = getToken();
-  if (!token) throw new Error("Ви не авторизовані!");
+export const addCourse = (data: z.infer<typeof courseFormSchema>) =>
+  interactWithAPI<typeof coursePlainSchema, z.infer<typeof courseFormSchema>>({
+    url: "courses/",
+    method: "post",
+    schema: coursePlainSchema,
+    data,
+    methodErrorMessage: "Не вдалось додати новий курс!",
+    serverErrorRecourseName: "Course",
+  });
 
-  const res = await axios
-    .get(`${import.meta.env.VITE_BASE_URL}/api/v1/courses/${id}`, {
-      headers: {
-        accept: "application/json",
-        Authorization: `${token?.token_type} ${token?.access_token}`,
-      },
-      withCredentials: true,
-    })
-    .catch(() => {
-      throw new Error("Такого курсу не існує!");
-    });
-  const { success, data: course } = await courseSimpleSchema.safeParseAsync(
-    res.data,
-  );
-  // console.log(error);
-  if (!success) throw new Error(`There is Error with loading Course data`);
-  return course;
-}
-
-export async function addCourse(data: z.infer<typeof courseSimpleSchema>) {
-  const token = getToken();
-  if (!token) throw new Error("Ви не авторизовані!");
-
-  const res = await axios
-    .post(`${import.meta.env.VITE_BASE_URL}/api/v1/courses/`, data, {
-      headers: {
-        accept: "application/json",
-        Authorization: `${token?.token_type} ${token?.access_token}`,
-      },
-      withCredentials: true,
-    })
-    .catch(() => {
-      throw new Error("Не вдалось додати новий курс!");
-    });
-
-  const { success, data: course } = await courseSimpleSchema.safeParseAsync(
-    res.data,
-  );
-  if (!success) throw new Error(`There is Error with loading Course data`);
-
-  return course;
-}
-
-export async function updateCourse(
-  data: z.infer<typeof courseSimpleSchema>,
+export const updateCourse = (
+  data: z.infer<typeof courseUpdateSchemaPartial>,
   id: number,
-) {
-  const token = getToken();
-  if (!token) throw new Error("Ви не авторизовані!");
+) =>
+  interactWithAPI<
+    typeof coursePlainPartialSchema,
+    z.infer<typeof courseUpdateSchemaPartial>
+  >({
+    url: `courses/${id}`,
+    method: "patch",
+    schema: coursePlainPartialSchema,
+    data,
+    methodErrorMessage: "Не вдалось оновити цей курс!",
+    serverErrorRecourseName: "Course",
+  });
 
-  const res = await axios
-    .patch(`${import.meta.env.VITE_BASE_URL}/api/v1/courses/${id}`, data, {
-      headers: {
-        accept: "application/json",
-        Authorization: `${token?.token_type} ${token?.access_token}`,
-      },
-      withCredentials: true,
-    })
-    .catch(() => {
-      throw new Error("Не вдалось оновити цей курс!");
-    });
+export const deleteCourse = (id: number) =>
+  interactWithAPI<z.ZodVoid, object>({
+    url: `courses/${id}`,
+    method: "delete",
+    schema: z.void(),
+    methodErrorMessage: "Не вдалось видалити цей курс!",
+    serverErrorRecourseName: "Course",
+  });
 
-  const { success, data: course } = await courseSimpleSchema.safeParseAsync(
-    res.data,
-  );
-  if (!success) throw new Error(`There is Error with loading Course data`);
+export const addTeacherToCourse = (courseId: number, teacherId: number) =>
+  interactWithAPI<typeof courseDetailedSchema, object>({
+    url: `courses/${courseId}/add-teacher/${teacherId}`,
+    method: "post",
+    schema: courseDetailedSchema,
+    methodErrorMessage: "Не вдалось додати викладача до цього курс!",
+    serverErrorRecourseName: "Course",
+  });
 
-  return course;
-}
+export const removeTeacherFromCourse = (courseId: number) =>
+  interactWithAPI<typeof courseDetailedSchema, object>({
+    url: `courses/${courseId}/teacher`,
+    method: "delete",
+    schema: courseDetailedSchema,
+    methodErrorMessage: "Не вдалось видалити викладача до цього курсу!",
+    serverErrorRecourseName: "Course",
+  });
 
-export async function deleteCourse(id: number) {
-  const token = getToken();
-  if (!token) throw new Error("Ви не авторизовані!");
+export const addGroupToCourse = (
+  courseId: number | string,
+  groupId: number | string,
+) =>
+  interactWithAPI<typeof courseDetailedSchema, object>({
+    url: `courses/${courseId}/groups/${groupId}`,
+    method: "post",
+    schema: courseDetailedSchema,
+    methodErrorMessage: "Не вдалось додати групу до цього курсу!",
+    serverErrorRecourseName: "Course",
+  });
 
-  await axios
-    .delete(`${import.meta.env.VITE_BASE_URL}/api/v1/courses/${id}`, {
-      headers: {
-        accept: "application/json",
-        Authorization: `${token?.token_type} ${token?.access_token}`,
-      },
-      withCredentials: true,
-    })
-    .catch(() => {
-      throw new Error("Не вдалось видалити цей курс!");
-    });
-}
-
-export async function addTeacherToCourse(courseId: number, teacherId: number) {
-  const token = getToken();
-  if (!token) throw new Error("Ви не авторизовані!");
-
-  const res = await axios
-    .post(
-      `${import.meta.env.VITE_BASE_URL}/api/v1/courses/${courseId}/add-teacher/${teacherId}`,
-      {
-        headers: {
-          accept: "application/json",
-          Authorization: `${token?.token_type} ${token?.access_token}`,
-        },
-        withCredentials: true,
-      },
-    )
-    .catch(() => {
-      throw new Error("Не вдалось додати викладача до цього курс!");
-    });
-
-  const { success, data: course } = await courseSimpleSchema.safeParseAsync(
-    res.data,
-  );
-  if (!success) throw new Error(`There is Error with loading Course data`);
-
-  return course;
-}
-
-export async function removeTeacherFromCourse(courseId: number) {
-  const token = getToken();
-  if (!token) throw new Error("Ви не авторизовані!");
-
-  const res = await axios
-    .delete(
-      `${import.meta.env.VITE_BASE_URL}/api/v1/courses/${courseId}/teacher`,
-      {
-        headers: {
-          accept: "application/json",
-          Authorization: `${token?.token_type} ${token?.access_token}`,
-        },
-        withCredentials: true,
-      },
-    )
-    .catch(() => {
-      throw new Error("Не вдалось видалити викладача до цього курс!");
-    });
-
-  const { success, data: course } = await courseSimpleSchema.safeParseAsync(
-    res.data,
-  );
-  if (!success) throw new Error(`There is Error with loading Course data`);
-
-  return course;
-}
+export const removeGroupFromCourse = (
+  courseId: number | string,
+  groupId: number | string,
+) =>
+  interactWithAPI<typeof courseDetailedSchema, object>({
+    url: `courses/${courseId}/groups/${groupId}`,
+    method: "delete",
+    schema: courseDetailedSchema,
+    methodErrorMessage: "Не вдалось видалити групу з цього курсу!",
+    serverErrorRecourseName: "Course",
+  });

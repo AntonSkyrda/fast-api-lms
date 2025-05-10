@@ -1,15 +1,16 @@
-import { useQuery } from "@tanstack/react-query";
+import { useResources } from "../../hooks/useResources";
 import { getCourses } from "../../lib/services/apiCourses";
 
 export function useCourses() {
   const {
     isLoading,
-    data: courses,
+    totalItems: totalCourses,
+    items: courses,
     error: coursesError,
-  } = useQuery({
-    queryKey: ["courses"],
-    queryFn: getCourses,
+  } = useResources({
+    resourceName: "courses",
+    fetchFn: getCourses,
   });
 
-  return { isLoading, courses, coursesError };
+  return { isLoading, totalCourses, courses, coursesError };
 }

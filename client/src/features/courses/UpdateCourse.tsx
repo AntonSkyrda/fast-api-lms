@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { buttonVariants } from "../../ui/Button";
+import { buttonVariants } from "../../ui/button";
 import {
   Dialog,
   DialogContent,
@@ -7,17 +7,12 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../../ui/Dialog";
+} from "../../ui/dialog";
 import CurseForm from "./CurseForm";
 import { Pencil } from "lucide-react";
-import { z } from "zod";
-import { courseSimpleSchema } from "../../schemas/coursesSchema";
+import { CoursePlain } from "../../types/dataTypes";
 
-function UpdateCourse({
-  course,
-}: {
-  course: z.infer<typeof courseSimpleSchema>;
-}) {
+function UpdateCourse({ course }: { course: CoursePlain }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (

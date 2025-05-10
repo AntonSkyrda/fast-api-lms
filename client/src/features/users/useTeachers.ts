@@ -1,16 +1,16 @@
-import { useQuery } from "@tanstack/react-query";
+import { useResources } from "../../hooks/useResources";
 import { getTeachers } from "../../lib/services/apiUsers";
 
 export function useTeachers() {
   const {
     isLoading,
-    data: teachers,
+    totalItems: totalTeachers,
+    items: teachers,
     error: teachersError,
-  } = useQuery({
-    queryKey: ["teachers"],
-    queryFn: getTeachers,
-    retry: false,
+  } = useResources({
+    resourceName: "teachers",
+    fetchFn: getTeachers,
   });
 
-  return { isLoading, teachers, teachersError };
+  return { isLoading, totalTeachers, teachers, teachersError };
 }

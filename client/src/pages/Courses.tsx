@@ -1,13 +1,19 @@
-import CoursesHeader from "../features/courses/CoursesHeader";
+import CoursesActions from "../features/courses/CoursesActions";
 import CoursesList from "../features/courses/CoursesList";
-import usePageTitle from "../hooks/usePageTitle";
+import { useCourses } from "../features/courses/useCourses";
+import PageHeader from "../ui/PageHeader";
+import PaginationComponent from "../ui/PaginationComponent";
 
 function Courses() {
-  usePageTitle("Курси");
+  const { totalCourses } = useCourses();
+
   return (
-    <div className="flex flex-col gap-10 px-10 py-4">
-      <CoursesHeader />
+    <div className="grid h-full grid-rows-[auto_1fr_auto] gap-10 px-10 py-4">
+      <PageHeader title="Курси">
+        <CoursesActions />
+      </PageHeader>
       <CoursesList />
+      <PaginationComponent total={totalCourses!} />
     </div>
   );
 }

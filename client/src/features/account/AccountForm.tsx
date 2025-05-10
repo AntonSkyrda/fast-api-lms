@@ -1,8 +1,8 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
-import { accountFormSchema } from "../../schemas/accountFormSchema";
-import { useAuth } from "../../contexts/AuthContext";
+import { userUpdateFormSchema } from "../../schemas/formsSchemas";
+import { useAuth } from "../../contexts/Auth/useAuth";
 import {
   Form,
   FormControl,
@@ -10,10 +10,10 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../../ui/Form";
-import { Input } from "../../ui/Input";
+} from "../../ui/form";
+import { Input } from "../../ui/input";
 import { Checkbox } from "../../ui/checkbox";
-import { Button } from "../../ui/Button";
+import { Button } from "../../ui/button";
 import Spinner from "../../ui/Spinner";
 import { useUpdateUser } from "./useUpdateUser";
 
@@ -22,8 +22,8 @@ function AccountForm() {
   const { updateUser, isPending } = useUpdateUser();
   const isLoading = isLoadingUserData || isPending;
 
-  const form = useForm<z.infer<typeof accountFormSchema>>({
-    resolver: zodResolver(accountFormSchema),
+  const form = useForm<z.infer<typeof userUpdateFormSchema>>({
+    resolver: zodResolver(userUpdateFormSchema),
     defaultValues: {
       email: user?.email,
       // password: "",
@@ -35,10 +35,25 @@ function AccountForm() {
     },
   });
 
+  if (!user) return null;
+
   function onSubmit(data: FieldValues) {
-    const { success, data: fields } = accountFormSchema.safeParse(data);
+    const { success, data: fields } = userUpdateFormSchema.safeParse(data);
     if (!success) return;
-    console.log(fields);
+
+    // No patch support on backend
+    // const changedData = form.formState.dirtyFields;
+
+    // if (Object.keys(changedData).length === 0) return;
+
+    // (Object.keys(fields) as (keyof typeof fields)[]).forEach((key) => {
+    //   if (fields[key] !== user?.[key]) {
+    //     changedData[key] = fields[key];
+    //   }
+    // });
+
+    // if (Object.keys(changedData).length === 0) return;
+
     updateUser(fields);
   }
 

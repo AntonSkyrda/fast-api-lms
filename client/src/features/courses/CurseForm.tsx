@@ -6,21 +6,23 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "../../ui/Form";
+} from "../../ui/form";
 import { z } from "zod";
-import { courseSimpleSchema } from "../../schemas/coursesSchema";
+import { courseFormSchema } from "../../schemas/formsSchemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Input } from "../../ui/Input";
-import { Button } from "../../ui/Button";
+import { Input } from "../../ui/input";
+import { Button } from "../../ui/button";
 import { useAddCourse } from "./useAddCourse";
 import Spinner from "../../ui/Spinner";
 import { useUpdateCourse } from "./useUpdateCourse";
 import { useEffect } from "react";
+import { getChangedFields } from "../../lib/utils/getChangedFields";
+import { CoursePlain } from "../../types/dataTypes";
 
 interface CourseFormProps {
-  isOpen: boolean;
-  handleClose: (isOpen: boolean) => void;
-  courseToEdit?: z.infer<typeof courseSimpleSchema>;
+  isOpen?: boolean;
+  handleClose?: (isOpen: boolean) => void;
+  courseToEdit?: CoursePlain;
 }
 function CurseForm({ isOpen, handleClose, courseToEdit }: CourseFormProps) {
   const { id: editId, ...editValues } = courseToEdit ?? {};
@@ -32,15 +34,9 @@ function CurseForm({ isOpen, handleClose, courseToEdit }: CourseFormProps) {
 
   const isLoading = isAdding || isUpdating;
 
-  const form = useForm<z.infer<typeof courseSimpleSchema>>({
-    resolver: zodResolver(courseSimpleSchema),
-    defaultValues: isEditSession
-      ? editValues
-      : {
-          name: "",
-          description: "",
-          teacher: null,
-        },
+  const form = useForm<z.infer<typeof courseFormSchema>>({
+    resolver: zodResolver(courseFormSchema),
+    defaultValues: isEditSession ? editValues : { name: "", description: "" },
   });
 
   useEffect(
@@ -50,30 +46,30 @@ function CurseForm({ isOpen, handleClose, courseToEdit }: CourseFormProps) {
     [isOpen, form],
   );
 
-  // useEffect(
-  //   function () {
-  //     if (form.formState.errors) console.log(form.formState.errors);
-  //   },
-  //   [handleClose, form.formState.errors],
-  // );
-
   function onSubmit(data: FieldValues) {
-    const { success, data: courseData } = courseSimpleSchema.safeParse(data);
+    const { success, data: courseData } = courseFormSchema.safeParse(data);
     if (!success) return;
-    if (isEditSession && typeof editId === "number")
+
+    if (isEditSession && typeof editId === "number") {
+      const changedData = getChangedFields(courseData, editValues);
+
+      console.log(changedData);
+
+      if (Object.keys(changedData).length === 0) return;
+
       updateCourse(
-        { data: { ...courseData }, id: editId },
+        { data: { ...changedData }, id: editId },
         {
           onSuccess: () => {
             form.reset();
-            handleClose(false);
+            handleClose?.(false);
           },
         },
       );
-    else {
+    } else {
       addCourse(courseData);
       form.reset();
-      handleClose(false);
+      handleClose?.(false);
     }
   }
 
@@ -118,7 +114,7 @@ function CurseForm({ isOpen, handleClose, courseToEdit }: CourseFormProps) {
           />
         </fieldset>
 
-        <div>
+        <div className="flex flex-row gap-5">
           <Button variant="default" type="submit" disabled={isLoading}>
             <span>
               {isLoading ? (
@@ -129,6 +125,14 @@ function CurseForm({ isOpen, handleClose, courseToEdit }: CourseFormProps) {
                 "Створити"
               )}
             </span>
+          </Button>
+          <Button
+            variant="outline"
+            type="reset"
+            disabled={isLoading}
+            onClick={() => form.reset()}
+          >
+            <span>Скинути</span>
           </Button>
         </div>
       </form>

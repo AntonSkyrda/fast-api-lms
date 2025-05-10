@@ -1,23 +1,41 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from sqlalchemy.orm import selectinload
+from sqlalchemy import select, func, or_
 
 from core.models.user import User
 from core.models import db_helper
 from core.schemas.user import UserRead
-
+from core.schemas.pagination import PaginationResponse
 
 router = APIRouter(prefix="/students", tags=["Students"])
 
 
-@router.get("/", response_model=list[UserRead])
-async def get_students(session: AsyncSession = Depends(db_helper.session_getter)):
-    result = await session.execute(select(User).where(User.is_student.is_(True)))
-    students = result.scalars().all()
-    if not students:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="No students found",
+@router.get("/", response_model=PaginationResponse[UserRead])
+async def get_students(
+    search: str | None = Query(None, description="Search by name, surname"),
+    limit: int = Query(10, ge=1),
+    offset: int = Query(0, ge=0),
+    session: AsyncSession = Depends(db_helper.session_getter),
+):
+    base_stmt = select(User).where(User.is_student.is_(True))
+
+    if search:
+        base_stmt = base_stmt.where(
+            or_(
+                User.first_name.ilike(f"%{search}%"),
+                User.last_name.ilike(f"%{search}%"),
+            )
         )
-    return students
+
+    total_stmt = select(func.count()).select_from(base_stmt.subquery())
+    total = await session.scalar(total_stmt)
+
+    result = await session.execute(
+        base_stmt.order_by(User.id).offset(offset).limit(limit)
+    )
+    students = result.scalars().all()
+
+    return PaginationResponse(
+        total=total or 0,
+        items=[UserRead.model_validate(s) for s in students],
+    )

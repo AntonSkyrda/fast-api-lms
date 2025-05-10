@@ -4,13 +4,13 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "../../ui/DropdownMenu";
+} from "../../ui/dropdownMenu";
 import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "../../ui/Sidebar";
-import { useAuth } from "../../contexts/AuthContext";
+} from "../../ui/sidebar";
+import { useAuth } from "../../contexts/Auth/useAuth";
 import { NavLink } from "react-router-dom";
 
 function ShortUser() {

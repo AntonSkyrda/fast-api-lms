@@ -7,6 +7,9 @@ __all__ = (
     "Course",
     "Group",
     "course_group_association_table",
+    "CourseProgram",
+    "lesson_group_association_table",
+    "Lesson",
 )
 
 from .base import BaseModel
@@ -16,3 +19,6 @@ from .acces_token import AccessToken
 from .course import Course
 from .group import Group
 from .course_group_association import course_group_association_table
+from .course_program import CourseProgram
+from .lesson_group_association import lesson_group_association_table
+from .lesson import Lesson

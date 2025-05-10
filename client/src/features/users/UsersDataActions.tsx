@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { Popover, PopoverContent, PopoverTrigger } from "../../ui/Popover";
-import { studentSchema, teacherSchema } from "../../schemas/userSchema";
+import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
+import { studentSchema, teacherSchema } from "../../schemas/usersSchema";
 import { EllipsisVertical } from "lucide-react";
 
 interface UsersDataActionsProps {

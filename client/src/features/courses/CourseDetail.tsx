@@ -3,7 +3,7 @@ import Spinner from "../../ui/Spinner";
 import Empty from "../../ui/Empty";
 import Heading from "../../ui/Heading";
 import CourseDataBox from "./CourseDataBox";
-import { Button, buttonVariants } from "../../ui/Button";
+import { Button, buttonVariants } from "../../ui/button";
 import { Plus } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -40,6 +40,7 @@ function CourseDetail() {
           <div className="flex flex-row items-center gap-5">
             <AddTeacherToCourse />
             <RemoveTeacherFromCourse />
+            <UpdateCourse course={course} />
           </div>
         </div>
       </header>
@@ -53,7 +54,6 @@ function CourseDetail() {
           </span>
           Додати заннятя
         </Button>
-        <UpdateCourse course={course} />
       </div>
     </div>
   );

@@ -1,8 +1,6 @@
-import { useEffect, useState } from "react";
-import { useAuth } from "../../contexts/AuthContext";
-import { useTeachers } from "../users/useTeachers";
+import { useAuth } from "../../contexts/Auth/useAuth";
 import { useAddTeacherToCourse } from "./useAddTeacherToCourse";
-import { Button, buttonVariants } from "../../ui/Button";
+import { buttonVariants } from "../../ui/button";
 import {
   Dialog,
   DialogContent,
@@ -10,62 +8,49 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "../../ui/Dialog";
-import Empty from "../../ui/Empty";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "../../ui/Form";
-import { FieldValues, useForm } from "react-hook-form";
-import { z } from "zod";
-import { addTeacherToCourseFormSchema } from "../../schemas/formSchemas";
-import { zodResolver } from "@hookform/resolvers/zod";
+} from "../../ui/dialog";
 import { useCourse } from "./useCourse";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "../../ui/Select";
 import toast from "react-hot-toast";
 import { Plus } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import TeachersSearch from "../users/TeachersSearch";
 
 function AddTeacherToCourse() {
+  const queryClient = useQueryClient();
   const { user } = useAuth();
   const { course } = useCourse();
-  const { addTeacherToCourse, isPending } = useAddTeacherToCourse();
-  const { teachers, isLoading: isLoadingTeachers } = useTeachers();
   const [isOpen, setIsOpen] = useState(false);
+  const [searchStr, setSearchStr] = useState("");
+  const { addTeacherToCourse, isPending } = useAddTeacherToCourse();
 
-  const isLoading = isPending || isLoadingTeachers;
-
-  const form = useForm<z.infer<typeof addTeacherToCourseFormSchema>>({
-    resolver: zodResolver(addTeacherToCourseFormSchema),
-    defaultValues: {
-      teacherId: course?.teacher?.id,
-    },
-  });
-
-  useEffect(
+  const clear = useCallback(
     function () {
-      if (isOpen === false) return () => form.reset();
+      queryClient.removeQueries({ queryKey: ["teachers"] });
+      setSearchStr("");
     },
-    [isOpen, form],
+    [queryClient],
   );
 
-  function handleSubmit(data: FieldValues) {
+  function handleSubmit(teacherId: number) {
     if (!course?.id) {
       toast.error("Неможливо отримати дані про курс");
       return setIsOpen(false);
     }
-    addTeacherToCourse(data.teacherId);
+
+    if (typeof teacherId !== "number") return;
+
+    addTeacherToCourse(teacherId);
+    clear();
     setIsOpen(false);
   }
+
+  useEffect(
+    function () {
+      if (!isOpen) clear();
+    },
+    [clear, isOpen],
+  );
 
   if (!user?.is_superuser || course?.teacher?.id) return null;
 
@@ -79,61 +64,17 @@ function AddTeacherToCourse() {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>
-            Додаавання викладача до курсу {course?.name}
-          </DialogTitle>
+          <DialogTitle>Додавання викладача до курсу {course?.name}</DialogTitle>
           <DialogDescription className="mb-6">
             Додайте викладача для студентів.
           </DialogDescription>
         </DialogHeader>
-        {teachers?.length === 0 ? (
-          <Empty resourceName="Викладачів" />
-        ) : (
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(handleSubmit)}
-              className="space-y-8"
-            >
-              <FormField
-                // control={form.control}
-                name="teacherId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Викладач</FormLabel>
-                    <Select
-                      // onValueChange={field.onChange}
-                      onValueChange={(value) => field.onChange(Number(value))}
-                      defaultValue={field.value}
-                      disabled={isLoading}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Оберіть викладача для цього курсу" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {teachers?.map((teacher) => (
-                          <SelectItem
-                            key={teacher.id}
-                            value={String(teacher.id)}
-                          >
-                            {teacher.first_name} {teacher.last_name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <div>
-                <Button variant="default" type="submit">
-                  Додати викладача
-                </Button>
-              </div>
-            </form>
-          </Form>
-        )}
+        <TeachersSearch
+          searchStr={searchStr}
+          handleSearch={setSearchStr}
+          handleSubmit={handleSubmit}
+          isLoading={isPending}
+        />
       </DialogContent>
     </Dialog>
   );

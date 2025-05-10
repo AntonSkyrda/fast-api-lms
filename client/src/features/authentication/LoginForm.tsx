@@ -6,14 +6,14 @@ import {
   FormLabel,
   FormMessage,
 } from "../../ui/form";
-import { Input } from "../../ui/Input";
-import { Button } from "../../ui/Button";
+import { Input } from "../../ui/input";
+import { Button } from "../../ui/button";
 
 import { FieldValues, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { loginFormSchema } from "../../schemas/loginFormSchema";
+import { loginFormSchema } from "../../schemas/formsSchemas";
 import { z } from "zod";
-import { useAuth } from "../../contexts/AuthContext";
+import { useAuth } from "../../contexts/Auth/useAuth";
 
 export default function LoginForm() {
   const form = useForm<z.infer<typeof loginFormSchema>>({

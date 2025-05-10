@@ -1,64 +1,22 @@
-import {
-  AlertDialog,
-  AlertDialogTrigger,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogContent,
-} from "../../ui/AlertDialog";
-import { Trash } from "lucide-react";
-import { useAuth } from "../../contexts/AuthContext";
-import { buttonVariants } from "../../ui/Button";
-import { z } from "zod";
-import { courseSimpleSchema } from "../../schemas/coursesSchema";
+import { useAuth } from "../../contexts/Auth/useAuth";
+import DeleteRecourceButton from "../../ui/DeleteRecourceButton";
 import { useDeleteCourse } from "./useDeleteCourse";
+import { CourseDetailed, CoursePlain } from "../../types/dataTypes";
 
-function DeleteCourse({
-  course,
-}: {
-  course: z.infer<typeof courseSimpleSchema>;
-}) {
-  const { user } = useAuth();
+function DeleteGroup({ course }: { course: CoursePlain | CourseDetailed }) {
   const { deleteCourse, isPending } = useDeleteCourse();
+  const { user } = useAuth();
+
   if (!user?.is_superuser) return null;
-  if (!course.id || typeof course.id === "undefined") return null;
 
   return (
-    <AlertDialog>
-      <AlertDialogTrigger
-        className={buttonVariants({ variant: "destructive" })}
-      >
-        <span>
-          <Trash />
-        </span>
-        Видалити курс
-      </AlertDialogTrigger>
-
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>
-            Ви точно хочете видалити курс {course.name}?
-          </AlertDialogTitle>
-          <AlertDialogDescription>
-            Ця дія невідворотня. Це повністю видалить цей курс.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel disabled={isPending}>Відмінити</AlertDialogCancel>
-          <AlertDialogAction
-            className={buttonVariants({ variant: "destructive" })}
-            onClick={() => deleteCourse(course.id!)}
-            disabled={isPending}
-          >
-            Видалити
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
+    <DeleteRecourceButton
+      tiggerTitle="Видалити курс"
+      title={`Ви точно хочете видалити курс ${course.name}`}
+      onDelete={() => deleteCourse(course.id)}
+      isLoading={isPending}
+    />
   );
 }
 
-export default DeleteCourse;
+export default DeleteGroup;

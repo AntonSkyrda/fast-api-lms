@@ -1,4 +1,5 @@
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, status, Depends, Query
+from fastapi.responses import Response
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from core.models import db_helper
@@ -9,16 +10,38 @@ from core.schemas.courses import (
     CourseReadPlain,
     CourseReadDetailed,
 )
-from core.crud import courses as crud
-from core.crud.groups import get_group
-
+from core.schemas.pagination import PaginationResponse
+from core.crud.groups import get_group_by_id
+from core.crud.courses import (
+    course_crud,
+    get_course_by_id,
+    add_group_to_course,
+    remove_group_from_course,
+    assign_teacher_to_course,
+    remove_teacher_from_course,
+)
 
 router = APIRouter(prefix="/courses", tags=["Courses"])
 
 
-@router.get("/", response_model=list[CourseReadPlain])
-async def get_courses(session: AsyncSession = Depends(db_helper.session_getter)):
-    return await crud.get_courses(session=session)
+@router.get("/", response_model=PaginationResponse[CourseReadPlain])
+async def get_courses(
+    limit: int = Query(10, ge=1),
+    offset: int = Query(0, ge=0),
+    search: str | None = Query(None),
+    session: AsyncSession = Depends(db_helper.session_getter),
+):
+    total, courses = await course_crud.get_all(
+        session=session,
+        offset=offset,
+        limit=limit,
+        search=search,
+        search_fields=["name", "description"],
+    )
+    return PaginationResponse(
+        total=total,
+        items=[CourseReadPlain.from_orm(course) for course in courses],
+    )
 
 
 @router.get("/{course_id}/", response_model=CourseReadDetailed)
@@ -26,13 +49,13 @@ async def get_course(
     course_id: int,
     session: AsyncSession = Depends(db_helper.session_getter),
 ):
-    course = await crud.get_course(session=session, course_id=course_id)
-    if course is not None:
-        return course
-    raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
-        detail=f"Course with id {course_id} not found",
-    )
+    course = await get_course_by_id(session, course_id)
+    if not course:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Course with id {course_id} not found",
+        )
+    return CourseReadDetailed.from_orm(course)
 
 
 @router.post("/", response_model=CourseReadPlain)
@@ -40,7 +63,8 @@ async def create_course(
     course_in: CourseCreate,
     session: AsyncSession = Depends(db_helper.session_getter),
 ):
-    return await crud.create_course(course_in=course_in, session=session)
+    course = await course_crud.create(session, course_in)
+    return CourseReadPlain.from_orm(course)
 
 
 @router.put("/{course_id}/", response_model=CourseReadDetailed)
@@ -49,55 +73,45 @@ async def update_course_put(
     course_in: CourseUpdate,
     session: AsyncSession = Depends(db_helper.session_getter),
 ):
-    course = await crud.get_course(session=session, course_id=course_id)
+    course = await get_course_by_id(session, course_id)
     if not course:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Course with id {course_id} not found",
         )
-
-    return await crud.update_course(
-        session=session,
-        course_id=course_id,
-        course_in=course_in,
-        partial=False,
-    )
+    updated = await course_crud.update(session, course.id, course_in, partial=False)
+    return CourseReadDetailed.from_orm(updated)
 
 
-@router.patch("/{course_id}/", response_model=CourseUpdatePartial)
+@router.patch("/{course_id}/", response_model=CourseReadDetailed)
 async def update_course_patch(
     course_id: int,
     course_in: CourseUpdatePartial,
     session: AsyncSession = Depends(db_helper.session_getter),
 ):
-    course = await crud.get_course(session=session, course_id=course_id)
+    course = await get_course_by_id(session, course_id)
     if not course:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Course with id {course_id} not found",
         )
-
-    return await crud.update_course(
-        session,
-        course_id,
-        course_in,
-        partial=True,
-    )
+    updated = await course_crud.update(session, course.id, course_in, partial=True)
+    return CourseReadDetailed.from_orm(updated)
 
 
-@router.delete("/{course_id}/", response_model=CourseReadPlain)
+@router.delete("/{course_id}/", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_course(
     course_id: int,
     session: AsyncSession = Depends(db_helper.session_getter),
 ):
-    existing_course = await crud.get_course(session=session, course_id=course_id)
-    if existing_course is None:
+    course = await get_course_by_id(session, course_id)
+    if not course:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Course with id {course_id} not found",
         )
-    deleted_course = await crud.delete_course(session=session, course_id=course_id)
-    return deleted_course
+    await course_crud.remove(session, course_id)
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
 @router.post("/{course_id}/groups/{group_id}/", response_model=CourseReadDetailed)
@@ -106,52 +120,60 @@ async def add_group_to_course_endpoint(
     group_id: int,
     session: AsyncSession = Depends(db_helper.session_getter),
 ):
-    course = await crud.get_course(session=session, course_id=course_id)
-    if course is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Course with id {course_id} not found",
-        )
+    course = await get_course_by_id(session, course_id)
+    if not course:
+        raise HTTPException(status_code=404, detail="Course not found")
 
-    group = await get_group(session=session, group_id=group_id)
-    if group is None:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail=f"Group with id {group_id} not found",
-        )
+    group = await get_group_by_id(session, group_id)
+    if not group:
+        raise HTTPException(status_code=404, detail="Group not found")
 
-    updated_course = await crud.add_group_to_course(
-        session=session, course=course, group=group
-    )
-    return updated_course
+    updated_course = await add_group_to_course(session, course, group)
+    return CourseReadDetailed.from_orm(updated_course)
+
+
+@router.delete("/{course_id}/groups/{group_id}/", response_model=CourseReadDetailed)
+async def remove_group_from_course_endpoint(
+    course_id: int,
+    group_id: int,
+    session: AsyncSession = Depends(db_helper.session_getter),
+):
+    course = await get_course_by_id(session, course_id)
+    if not course:
+        raise HTTPException(status_code=404, detail="Course not found")
+
+    group = await get_group_by_id(session, group_id)
+    if not group:
+        raise HTTPException(status_code=404, detail="Group not found")
+
+    updated = await remove_group_from_course(session, course, group)
+    return CourseReadDetailed.from_orm(updated)
 
 
 @router.post("/{course_id}/add-teacher/{teacher_id}", response_model=CourseReadDetailed)
-async def assign_teacher_to_course(
+async def assign_teacher_to_course_endpoint(
     course_id: int,
     teacher_id: int,
     session: AsyncSession = Depends(db_helper.session_getter),
 ):
-    course = await crud.add_teacher_to_course(session, course_id, teacher_id)
-
+    course = await assign_teacher_to_course(session, course_id, teacher_id)
     if not course:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
+            status_code=404,
             detail="Course or teacher not found, or teacher is invalid",
         )
-
-    return course
+    return CourseReadDetailed.from_orm(course)
 
 
 @router.delete("/{course_id}/teacher", response_model=CourseReadDetailed)
-async def delete_course_teacher(
+async def delete_course_teacher_endpoint(
     course_id: int,
     session: AsyncSession = Depends(db_helper.session_getter),
 ):
-    course = await crud.remove_teacher_from_course(session=session, course_id=course_id)
-    if course is None:
+    course = await remove_teacher_from_course(session, course_id)
+    if not course:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
+            status_code=404,
             detail=f"Course with id {course_id} not found",
         )
-    return course
+    return CourseReadDetailed.from_orm(course)

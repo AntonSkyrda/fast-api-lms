@@ -1,36 +1,14 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
-import { z } from "zod";
-import { userSchema } from "../schemas/userSchema";
-import { removeToken, saveToken } from "../lib/utils/manageCookie";
+import { useCallback, useEffect, useState } from "react";
+import { removeToken, saveToken } from "../../lib/utils/manageCookie";
 import {
   login as loginApi,
   logout as logoutApi,
-} from "../lib/services/apiAuth";
-import { getUserByToken } from "../lib/services/apiUser";
+} from "../../lib/services/apiAuth";
+import { getUserByToken } from "../../lib/services/apiUsers";
 import { useLocation, useNavigate } from "react-router-dom";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
-
-type User = z.infer<typeof userSchema> | null;
-
-interface AuthContextType {
-  user: User | undefined;
-  isLoading: boolean;
-  isAuthenticated: boolean;
-  loginError: string;
-  getUserError: Error | null;
-  login: (email: string, password: string) => void;
-  logout: () => void;
-  refetchUser: () => void;
-}
-
-const AuthContext = createContext<AuthContextType | null>(null);
+import { AuthContext, User } from "./AuthContext";
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const navigate = useNavigate();
@@ -54,8 +32,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(
     function () {
       if (getUserError) {
-        navigate("/login");
         toast.error(getUserError.message);
+        removeToken();
+        navigate("/login");
       }
     },
     [getUserError, navigate],
@@ -100,10 +79,4 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       {children}
     </AuthContext.Provider>
   );
-}
-
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) throw new Error("useAuth must be used within AuthProvider");
-  return context;
 }

@@ -1,8 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { z } from "zod";
-import { addUser as addUserApi } from "../../lib/services/apiAuth";
+import { addUser as addUserApi } from "../../lib/services/apiUsers";
 import toast from "react-hot-toast";
-import { userSchema } from "../../schemas/userSchema";
+import { userAddFormSchema } from "../../schemas/formsSchemas";
 
 const userTypes = {
   is_student: "Студента",
@@ -20,7 +20,7 @@ function whoIsUser(
   if (is_superuser) return userTypes["is_superuser"];
 }
 
-type UpdateData = z.infer<typeof userSchema>;
+type UpdateData = z.infer<typeof userAddFormSchema>;
 export function useAddUser() {
   const queryClient = useQueryClient();
   const {
